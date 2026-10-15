@@ -1,0 +1,2417 @@
+<title>CDL Driver Application</title>
+<meta name="claude:viewport-fit-sides" content="cover" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Saira:ital,wght@0,400;0,500;0,600;0,700;1,700;1,800;1,900&family=Caveat:wght@600&display=swap"
+/>
+<style>
+  /* Layout: white logo bar → Interlogix-blue band (headline or progress) → white sheet that overlaps the band; the sheet holds the road map (left on desktop) and the work area. */
+  :root {
+    --page: #ffffff;
+    --surface: #ffffff;
+    --surface-2: #f3f5f9;
+    --ink: #0e1b33;
+    --muted: #46536b;
+    --line: #cbd3e1;
+    --accent: #234a98;
+    --accent-strong: #1a3a7c;
+    --on-accent: #ffffff;
+    --accent-soft: #e3eaf6;
+    --action: #f5c84c;
+    --action-hover: #edb82a;
+    --on-action: #0e1b33;
+    --brand: #234a98;
+    --on-brand: #ffffff;
+    --brand-muted: #dce5f7;
+    --brand-line: #8fa8d8;
+    --brand-off: #3d61aa;
+    --yellow: #f5c84c;
+    --danger: #b42318;
+    --danger-soft: #fdecea;
+    --display: "Saira", "Arial Narrow", sans-serif;
+    --body: "Saira", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --script: "Caveat", "Bradley Hand", cursive;
+  }
+  :root {
+    color-scheme: light;
+  }
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    background: var(--page);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 18px;
+    line-height: 1.5;
+  }
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+    color: inherit;
+  }
+  button {
+    cursor: pointer;
+  }
+  :focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 3px;
+  }
+  .band :focus-visible {
+    outline-color: var(--yellow);
+  }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+  .wrap {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding-left: max(20px, env(safe-area-inset-left, 0px));
+    padding-right: max(20px, env(safe-area-inset-right, 0px));
+  }
+  .top .wrap {
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+
+  /* Logo bar: always white so the logo reads in either theme */
+  .top {
+    background: #ffffff;
+    color: #0e1b33;
+  }
+  .top .wrap {
+    padding-block: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+  }
+  .logo {
+    height: 34px;
+    width: auto;
+    max-width: 100%;
+    display: block;
+  }
+  .brand .sub {
+    font-size: 14px;
+    font-weight: 700;
+    font-style: italic;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #234a98;
+    border-left: 2px solid #cbd3e1;
+    padding-left: 14px;
+    white-space: nowrap;
+  }
+  @media (max-width: 700px) {
+    .brand .sub {
+      display: none;
+    }
+  }
+  @media (max-width: 420px) {
+    .logo {
+      height: 30px;
+    }
+  }
+  .lang {
+    flex-shrink: 0;
+    display: flex;
+    gap: 2px;
+    padding: 3px;
+    border: 2px solid #cbd3e1;
+    border-radius: 999px;
+  }
+  .lang button {
+    min-height: 40px;
+    min-width: 46px;
+    padding: 0 10px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: #0e1b33;
+    font-weight: 700;
+    font-size: 15px;
+  }
+  .lang button[aria-pressed="true"] {
+    background: #234a98;
+    color: #ffffff;
+  }
+  .lang button:focus-visible {
+    outline-color: #234a98;
+  }
+
+  /* Blue band */
+  .band {
+    background: var(--brand);
+    color: var(--on-brand);
+  }
+  .band .wrap {
+    padding-block: 20px 46px;
+  }
+  @media (min-width: 900px) {
+    .band .wrap {
+      padding-block: 40px 66px;
+    }
+  }
+  .flag {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--yellow);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .flag::before {
+    content: "";
+    flex-shrink: 0;
+    width: 48px;
+    height: 12px;
+    background: conic-gradient(
+        var(--yellow) 25%,
+        transparent 0 50%,
+        var(--yellow) 0 75%,
+        transparent 0
+      )
+      0 0 / 12px 12px;
+  }
+  .band h1 {
+    margin: 14px 0 0;
+    font-family: var(--display);
+    font-weight: 900;
+    font-style: italic;
+    text-transform: uppercase;
+    line-height: 0.98;
+    letter-spacing: -0.01em;
+    font-size: clamp(42px, 6vw, 68px);
+    max-width: 14em;
+    outline: none;
+  }
+  .hl {
+    color: var(--yellow);
+  }
+  .band .lede {
+    margin: 14px 0 0;
+    font-size: clamp(18px, 2vw, 20px);
+    color: var(--brand-muted);
+    max-width: 34em;
+  }
+  .qtop {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    max-width: 760px;
+  }
+  .iconbtn {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    border: 2px solid var(--brand-line);
+    background: transparent;
+    color: var(--on-brand);
+    display: grid;
+    place-items: center;
+  }
+  .iconbtn:hover {
+    border-color: var(--on-brand);
+  }
+  .qmeta {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    flex: 1;
+  }
+  .qmeta .kick {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--yellow);
+  }
+  .qmeta .sec {
+    font-weight: 700;
+    font-size: 19px;
+    line-height: 1.25;
+  }
+  .qcount {
+    font-size: 15px;
+    color: var(--brand-muted);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .segs {
+    display: grid;
+    gap: 5px;
+    margin-top: 16px;
+    max-width: 760px;
+  }
+  .segs span {
+    height: 7px;
+    border-radius: 4px;
+    background: var(--brand-off);
+  }
+  .segs span.on {
+    background: var(--yellow);
+  }
+  .bandmark {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+  .bandmark .big {
+    width: 72px;
+    height: 72px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: var(--yellow);
+    color: #0e1b33;
+    display: grid;
+    place-items: center;
+  }
+  .bandmark h1 {
+    margin: 0;
+  }
+
+  /* White sheet */
+  .sheet {
+    position: relative;
+    margin-top: -26px;
+  }
+  .sheet .wrap {
+    background: var(--surface);
+    border-radius: 22px 22px 0 0;
+    padding-block: 24px 28px;
+  }
+  @media (min-width: 1152px) {
+    .sheet .wrap {
+      padding-left: 32px;
+      padding-right: 32px;
+    }
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "main" "map" "extra";
+    gap: 24px;
+  }
+  .main {
+    grid-area: main;
+    min-width: 0;
+    max-width: 700px;
+  }
+  .map {
+    grid-area: map;
+    min-width: 0;
+  }
+  .extra {
+    grid-area: extra;
+    min-width: 0;
+    max-width: 700px;
+  }
+  .extra:empty {
+    display: none;
+  }
+  .grid.asking .map {
+    display: none;
+  }
+  @media (min-width: 900px) {
+    .grid {
+      grid-template-columns: 290px minmax(0, 1fr);
+      grid-template-areas: "map main" "map extra";
+      grid-template-rows: auto 1fr;
+      column-gap: 48px;
+      row-gap: 0;
+      align-items: start;
+    }
+    .grid.asking .map {
+      display: block;
+    }
+    .map {
+      position: sticky;
+      top: calc(env(safe-area-inset-top, 0px) + 16px);
+    }
+  }
+
+  /* Road map */
+  .map h2 {
+    margin: 0;
+    font-family: var(--display);
+    font-weight: 800;
+    font-style: italic;
+    font-size: 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    color: var(--accent);
+  }
+  .map-sum {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 6px;
+  }
+  .map-sum .line {
+    font-size: 15px;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .bar {
+    height: 10px;
+    border-radius: 5px;
+    background: var(--surface-2);
+    overflow: hidden;
+    border: 1px solid var(--line);
+  }
+  .bar > span {
+    display: block;
+    height: 100%;
+    background: var(--yellow);
+    border-radius: 5px;
+    transition: width 0.3s ease;
+  }
+  .stops {
+    list-style: none;
+    margin: 10px 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .stop {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 32px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    min-height: 52px;
+    padding: 6px 10px;
+    border: 2px solid transparent;
+    border-radius: 10px;
+    background: var(--surface-2);
+    text-align: left;
+  }
+  .stop:hover {
+    border-color: var(--line);
+  }
+  .stop.current {
+    background: var(--surface);
+    border-color: var(--accent);
+  }
+  .stop:disabled {
+    cursor: default;
+  }
+  .dot {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+    font-size: 16px;
+    border: 2px solid var(--line);
+    color: var(--muted);
+  }
+  .stop.done .dot,
+  .stop.current .dot {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--on-accent);
+  }
+  .stop .t {
+    font-weight: 700;
+    font-size: 17px;
+    line-height: 1.25;
+  }
+  .stop .s {
+    font-size: 14px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .stop.done .s {
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .stop .go {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  /* Buttons */
+  .btn {
+    min-height: 62px;
+    width: 100%;
+    border-radius: 10px;
+    border: 0;
+    background: var(--action);
+    color: var(--on-action);
+    font-weight: 800;
+    font-style: italic;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    font-size: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 0 22px;
+  }
+  .btn:hover {
+    background: var(--action-hover);
+  }
+  .btn.ghost {
+    background: transparent;
+    color: var(--ink);
+    border: 2px solid var(--line);
+  }
+  .btn.ghost:hover {
+    border-color: var(--ink);
+    background: transparent;
+  }
+  .btn.small {
+    min-height: 52px;
+    font-size: 17px;
+    width: auto;
+  }
+  .linkbtn {
+    background: none;
+    border: 0;
+    padding: 10px 4px;
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 16px;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .saved {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+    font-size: 15px;
+    color: var(--muted);
+    margin-top: 10px;
+  }
+
+  /* Home */
+  .ready {
+    margin-top: 22px;
+    padding: 16px 18px;
+    background: var(--surface-2);
+    border-radius: 14px;
+  }
+  .ready h2 {
+    margin: 0 0 10px;
+    font-size: 16px;
+    font-weight: 700;
+  }
+  .ready ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .ready li {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .ready svg {
+    flex-shrink: 0;
+    margin-top: 3px;
+    color: var(--accent);
+  }
+
+  /* Question */
+  .q {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .q .answer {
+    margin-bottom: 24px;
+  }
+  @media (max-width: 899px) {
+    .q {
+      min-height: calc(100svh - 236px);
+    }
+  }
+  .q h1 {
+    margin: 0;
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(28px, 4vw, 40px);
+    line-height: 1.12;
+    outline: none;
+  }
+  .q .help {
+    margin: 0;
+    font-size: 18px;
+    color: var(--muted);
+    max-width: 34em;
+  }
+  .tag {
+    display: inline-block;
+    align-self: flex-start;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: var(--surface-2);
+    color: var(--muted);
+    border: 1px solid var(--line);
+  }
+  .answer {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .input {
+    width: 100%;
+    min-height: 60px;
+    padding: 12px 16px;
+    border: 2px solid var(--line);
+    border-radius: 12px;
+    background: var(--surface);
+    color: var(--ink);
+    font-size: 20px;
+  }
+  .input:disabled {
+    opacity: 0.55;
+  }
+  textarea.input {
+    min-height: 120px;
+    resize: vertical;
+    line-height: 1.4;
+  }
+  .input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px var(--accent-soft);
+  }
+  .yn {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .choice {
+    min-height: 82px;
+    border-radius: 12px;
+    border: 2px solid var(--line);
+    background: var(--surface);
+    font-size: 23px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 0 18px;
+  }
+  .opts {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .opts .choice {
+    justify-content: flex-start;
+    min-height: 64px;
+    font-size: 19px;
+    font-weight: 700;
+    text-align: left;
+  }
+  .choice:hover {
+    border-color: var(--ink);
+  }
+  .choice[aria-pressed="true"] {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--on-accent);
+  }
+  .box {
+    width: 26px;
+    height: 26px;
+    flex-shrink: 0;
+    border-radius: 7px;
+    border: 2px solid currentColor;
+    display: grid;
+    place-items: center;
+  }
+  .err {
+    padding: 12px 16px;
+    border-radius: 12px;
+    background: var(--danger-soft);
+    color: var(--danger);
+    font-weight: 600;
+    font-size: 17px;
+  }
+  .qactions {
+    position: sticky;
+    bottom: 0;
+    margin-top: 4px;
+    padding: 14px 0 calc(14px + env(safe-area-inset-bottom, 0px));
+    background: var(--surface);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .helpstrip {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    padding: 14px 16px;
+    background: var(--surface-2);
+    border-radius: 12px;
+  }
+  .helpstrip > svg {
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+  .helpstrip .txt {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    flex: 1 1 180px;
+  }
+  .helpstrip .lbl {
+    font-weight: 700;
+    font-size: 16px;
+  }
+  .helpstrip .num {
+    font-size: 16px;
+    color: var(--muted);
+    user-select: all;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* File */
+  .filebox {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding: 16px;
+    border: 2px dashed var(--line);
+    border-radius: 14px;
+  }
+  .filebox img {
+    width: 140px;
+    max-width: 100%;
+    aspect-ratio: 1.586;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+  }
+  .filebox label.btn {
+    width: auto;
+  }
+
+  /* Jobs */
+  .tally {
+    padding: 14px 16px;
+    border-radius: 12px;
+    background: var(--surface-2);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .tally .line {
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .jobs {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .job {
+    padding: 14px 16px;
+    border: 2px solid var(--line);
+    border-radius: 12px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+  .job .name {
+    font-weight: 700;
+    font-size: 18px;
+  }
+  .job .meta {
+    font-size: 15px;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .pill {
+    display: inline-block;
+    margin-top: 6px;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 999px;
+    background: var(--accent-soft);
+    color: var(--accent-strong);
+  }
+  .jobform {
+    padding: 18px;
+    border: 2px solid var(--accent);
+    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .jobform .row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 12px;
+  }
+  .lab {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-weight: 600;
+    font-size: 16px;
+    min-width: 0;
+  }
+  .lab .input {
+    min-height: 54px;
+    font-size: 18px;
+  }
+  .check {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 48px;
+    font-size: 17px;
+    font-weight: 600;
+  }
+  .check input {
+    width: 26px;
+    height: 26px;
+    accent-color: var(--accent);
+    flex-shrink: 0;
+  }
+  .note {
+    font-size: 15px;
+    color: var(--muted);
+    margin: 0;
+  }
+
+  /* Consents */
+  .forms {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .form {
+    padding: 14px 16px;
+    border: 2px solid var(--line);
+    border-radius: 12px;
+  }
+  .form .t {
+    font-weight: 700;
+    font-size: 17px;
+  }
+  .form p {
+    margin: 4px 0 0;
+    font-size: 15px;
+    color: var(--muted);
+  }
+  .form details {
+    margin-top: 6px;
+    font-size: 15px;
+  }
+  .form summary {
+    color: var(--accent);
+    font-weight: 600;
+    min-height: 36px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+  }
+  .agree {
+    padding: 14px 16px;
+    border-radius: 12px;
+    background: var(--accent-soft);
+  }
+  .sigpad {
+    min-height: 96px;
+    border-bottom: 3px solid var(--ink);
+    display: flex;
+    align-items: flex-end;
+    padding: 0 6px 6px;
+    font-family: var(--script);
+    font-size: 46px;
+    line-height: 1;
+    overflow-wrap: anywhere;
+  }
+  .sigpad.empty {
+    color: var(--muted);
+    font-family: var(--body);
+    font-size: 16px;
+  }
+
+  /* Milestones */
+  .after {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-width: 520px;
+  }
+  .after .lede {
+    margin: 0;
+    font-size: 20px;
+    color: var(--muted);
+  }
+  .after h2 {
+    margin: 6px 0 0;
+    font-size: 18px;
+  }
+  .nextsteps {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: s;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .nextsteps li {
+    counter-increment: s;
+    display: grid;
+    grid-template-columns: 34px 1fr;
+    gap: 12px;
+    align-items: start;
+  }
+  .nextsteps li::before {
+    content: counter(s);
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--on-accent);
+    font-weight: 700;
+    display: grid;
+    place-items: center;
+  }
+
+  /* Footer */
+  .demo {
+    margin-top: 24px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    gap: 4px 16px;
+    flex-wrap: wrap;
+    align-items: center;
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .demo .sp {
+    flex: 1 1 200px;
+  }
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+    transform: translateX(-50%);
+    background: #234a98;
+    color: #ffffff;
+    padding: 14px 20px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 17px;
+    max-width: calc(100% - 32px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+    z-index: 10;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      transition: none !important;
+    }
+  }
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand">
+      <img
+        class="logo"
+        src="data:image/webp;base64,UklGRtwtAABXRUJQVlA4INAtAACwlgCdASobAngAPj0ai0QiIaET+Y34IAPEpu/D8IADsq8X/RfyvtDK2dy/o/7cfkr8vlS/qH9i/Ov7x/6zlwa18w3yz9T/3X9r/b7+2f//4//7n+0e4j8n/6v+7fAD/E/5H/n/77/j//J/lfi69TH9m/1HqB/pP9g/7v+d/fT5m/8p+0vua/0n+X9gD+v/4XrCv8F/sf//7gH7U//b1zf27/8fyhf1X/cftf8DP9B/wv/k/cz///IB/9/ba6OfsF/V/yD94HeR9T/uX63f27/3eZv6P+nfjh/Wv+j/q/vlwV2mfxb61/Zf7P/hv8v/if/D/vfvP/Xf6rxH+QuoF+Hfxb+oflh/Xv275IDa/MF91/oP+K/wn7t/3P49/hP8d6H/Zn/e+4B/M/6B/ef7p+039g////L92DxU/xX/L9gH+Sf0T/I/4r8lfpu/nv+L/lP8t+zHuS/Q/8N/w/8z/ov2S+xD+U/1D/R/3r/L/+r/Gf///4feH7JP3O9kz9nP+6eFt3C+R9+AEG5aqBskPqlsJy0+g/7eI3ilzryaD/h3rAQX+hFyfuSrTppe5cDLiGpFWm6KKC3aicdY8wr2t/P9AbO4dsLDjwSEvEjBJJkGZwSxPLsx15JNDUdXJYcR+K6JgSXqlem+xGbHPF75FdwC1aLGOFqfQunZ6+VvjhTWzJ35Mad0j6BDHZAXDhhe7m727YX3eSEFV1n1A1ZCBEwCAEa3fNo9oJajqai0Wbvse7iqcYfOli5qTRpw2eCkWWoi2w1dRJ0iDMnKWQ8uIu7gOJLfNUrKL7dtud+dzpHEFLOfa7/6BZZouSooj9GDH7/2sl76h8SvwakEgDbkUMYWnOQhR9ULw+z5oyc3zg50gjt/k2XfuW4I21z/5dVgHoDwHiKVfREvhwkWUfxQcSnp4mU4Jjp5UgAEFiB1JuRF55wlBOH8/7syGA0dVnOe1uPHlw0gjWSe6bQE0BipJwA4GUQ8jXCa+WKavSGlXc7l05ULBLzGX6cHaawF8bqAviS2HWSrg6LjzjP1Xvfu3+A0YfUAABk1gNZbJze9g64L9kgWS3Yz6artW2Ij/4hOuOpm3f5d7wN1u0Us9mCiSB/hBZul31ibiglZvh9r/fxlkpRA5fjGQd4l6Q44duMOO/1fT6KFOqM3KgrB9Xxs2nkLjtSfoQYLICx1zNoZTD0Kh2XGbMF2o1nFOZVm9zJbzYHx66wPwbKyD8o/iDE6nwceWIG/5/btBOmYbdecPv9wljdvvf7Lrz3VmnaAben3Q8eMCv7ug/6aiKqs8AxHEBTM9+/9zRnjdvM9yz2RNLoLYpjqTuSejM3xyydXUd424FNWMC00We2zm1hGn1pagsk2zR8WFbpVA4FTNgOTnzgHLrlbRy398wClMzf988wDYO5GM6idQqY+NbfV7KWbYr7ybT9iuGjYZxYBumdTR7p8cpUsU4QJ42mLQlZcQMGG85z/yCinBW+BWKvwEqKt+BEm9Hf5M9rCxFGphJ9nzebXR3Nu0BbfahOuubXBJzb//narhbaSHD80633TvAbFMhmnEvgEQUGGVq8UcaDIUii30yC70a9wa0vsDErJUvbKX6KwLvW4GXENSKtOml7kkAD+/oO53Bz/hxZssH/vuPB6PrLkPwUfbrh0wOh9d9zVlbaU2kqADt08XOOi9QG/O/aCfTZx0WmpYZCoe9zf/WZ8GD4FwUtYYLiV84z6OkqR3HfKhPa+KUl7jqpFI2xf0Y/jJfwZrQvtiiYZxpUu8veveJ/MkfiLHT4LtOv0vbhaWVa947D9XU2zDmRGj78q2gREEJ8k6V9PYUSe7agQnRw/OyajYNQJqzAORrVBDr2AqQpfzoFEtxL6TAPRLhCvhadTGFM0RDHqp5CESKIjga6X/fvAdmoCHAN2ST1T/ccGT/ChIws7v4Cw9x7M4e0D/2dcw1QByDlMm5KFIGXzMwuu4xOmZJo4FPWjbzGYQLeDzRZgmCTlgEtMKQCyzpIRdbny/tWRtskfU+dJvVEk9qI2wIGccCEZv/GjfImKKxRvCKCkw734tkKH6qsAFWqYsEkkVrOYw7SaWZi4PgwtrwrsBqVVlSGyG1W4xS2rdSZR8+Q8Bl0l3ihVif8PrfHC/g8U2Bzj8GT+ND0MXzm53EjPwsYrb4mM1YXUp+eL52HOl/uENJAx0HJ5Yvyx+P/ATi0a/8Ty6dYmYZYgHixHRunHlwyKJYDu8EodYdBfLnJ1qn43B+KBLjlZbYvKwjD4y++AAAAlBXvluUsvs3wBzCfq6j2LyII7LxV6bWA4VdO27kakw6NFmx67R8BMR4lwcIg8iLZgSUgWRs8O5zNy/xmFC4uNAmEWBdBO5bf+quG9sqg1m/7JEOLLGzYboNkkKsrk8IbKbezfHFpwpPOg7EYmThE5FtTU4xi8gshjaaEFZxQ/NoLhM6XT15pQuAnLglfwq92+cN3y3MktH3mjHCnx8B+yDr1a9pw6Zl2i4hXQ0mL45HJkFGnKxv2RHWioHIxC5gOzEMOOaoO+a/drrPemNjrd++XoCAYB3S4OD04s1psMJQYnlkQzmlqZFKnaLb5fzw3sUX4g3a36Ui78AOQUFBJb+IAu2IqD/herysDnIH1t2UwSlJInw3zMjvPt5WCbntW09VozK1euqkT3xuzwgnab8QJeWWyxzJWy4tYi7xcD+XhxHjNlAuKc5/tkzFX3tT3ljlNlAonr/uEwYk0TxnF/DcOiNth3i+3TitiX6CAzds3g9D4pvPu5zz9Pct4uYhoa4ZrFUGb8UWD7XEwkRh8odhjIsmjDJbFpgEr3ID3u0QF7Ss/GvsDOw8OsgaN27z1s+RUIFArlMDjUeQHRo6p78BN0pOIpc42F797bo+1+QbYgOoqogEN2jBFMQmIIy3GbFLFsccV451Zou48Qa7si4oO6kKAjKr5RdoyWUK/Qs4CX2dE4PmB988NVHaiuFwPaR9q9IO/Yt1D3rdM25c/LwLQm86rrIEB6BqeUcDV06A5uUBkT5mKDlvahSljOqmsb8l2s6CplFWmkGwUNVOMZc4RXc1vDkHXJ3VWZM4B29wP5j9pjeiCwjHbanvCuK7ROCEX7si6yw7h0hgSc6qLBhko4Gd3cETOj3Bow6dYuQkv3EpUf2t+S0ZdCz72jbk8uNn6I6/jpAwQYL+CFEsc7v/5XmU4mtatKZa5px+1E+l0ZT0ai76G/QIAFAUvPhFAqG7vgwz+TePUezvCGjvTTq19B3Q0x4DKLXCdi+bYBTu+RKuTg89JfrME81QTBtK/NXely8D8EyZgvg86OpO0cxrpey17gKDoF+frdGlz+u935opA6KTXPKvzQl5fBViLX0JqwiL2Ri1K1QfJ8gZ4/vfugKXt7BY4djXxRtBCR6CQkgrqS4eTAhMCzwKtfpvTvzD9jyREpLl41zaDZaJ5VPgai1DUBBen7IQqC4ZKbh/eiXjqBZ7TZzA7ZiOBopeX5Jd4Kxsjt7FMtbqouX4R8q/fmpxvWd8klGEugWuHdYA5wf4rm2A9h/jYRMW4byHXti2TWcYBLeK4O346cyCdq56SbG3wf5BpKDWJRrwLGrdOANvkeFDWMsbSD8u3Dh9jCOAcaM0lvwH2ZkFJLfTLf15Y0rSOF0Kuk+tX2HdGL3BQaIlz/odKiSyhfcU8wOHeaAGZaQj0pwbSnM7d9twqcCPX9Ba3qmqOknzQUuVbXhyhWdEb3gOKtmNNyG1HVCnvp8sStKoHMjVa26uOw2KGbKQRr4Hv4U7Kawjm4ZAut4g4MR3Hynnm/EA8LqV7UJBg6VAAgyDU/1/YzUgtJsbNkQFCK7WjCaW0NANGxuLIfm0i3jwHRY9uD1ohay4FxXDoRehJgpl/oXiOZxjhWHbmmykGS+zcATIkZYRs3RMTRtsDJtNH9kOrucX+GlE3fWo2PaKNrvmBPEjGqDaFinvGWyO2JE2sJ4TOavCKN89LP/epoL/DhHkaZBUSxbWeG0LR9aBF9zuPru6rIVsyEv/hqNbluQCC+6tAdRsE5HEHX11HUA8+G93CQHDQkQije4+heY8TqVdyaJs2NTJrjBwbkAbXF70UYS4Q74/dEV9yN+X2MHaES4PLdIjKHwvkBCC04iY7kZLmTP8ezwv7tPwgB+rxzHt7oV3m6G2t0ZGLSDRj8NIbcMtkIbYVAu/LgbiaNkU+88hGZjmk+mNQ1QiI5wonLiqFmT1tmgOTTV8YdGA1eF+J38KMJ5uvsOwjaUHUM0MDzktZ8J1mBZ5nXzFZoGg/l4RJBy7XjAyqe/Xc0BKM2FeruCEQae0I//MzUph2mSWcoCgraZHjqp5UnD087JqsuKwlaWS1MhPfj5HG4Y0fjor2Z31Dyw5fB+zuGYdkWHXlFvfYoIadqv8GlCaj1L9yRRWj4Q7kVUA/x0l7NNIRAIAMVTxoRuo/saKFVg3NeHvTps5SW7ohs6Sdst1lDtx+yc+6ck8FLeP26yFQoy8OIoxMQ6wWtQXB+iZB3jv5VmCSrV71ICzeqWEC6yvfsXhUzueNi9JEpgkwAA1INtYxNdV3ezImpw36maujM/hcImIc2ppfsj6YlxSwaaao2IHkPDOAaUepJ1/WYO193I5OLj3lvDuJ5s6NqCKXZSCCGnFtRhCZmVQh5ksKU5g5LR0QdlzrUfUqE2jlDUEFvhYRnuAgLaQGeNEt3ZpeaYZpp28gTgYHzjbCOW49WDuVQe5vDoFWGYtgewtUyMfDoWZMe5Bbg1V4l7QwKA2liBdJEHEv6NidjR58kH1XDfv5PxhZS+4ZMh1vOBgRF+oLXCIzVbgdWBuxSFtMuFwWcSu/xknQW5jMxKDTZq2moMvTiJZTb9r6lAB8+d62NFJeJu8xKiTZHlBFg0r8irylDLuwhgtDcWaBBZhMZdFUu06BgBIsg1K8j3uSwV29pncfyQ/gDUC+EHbI6OeOG5Wtg26kYfunupGoHFpitA4sI3bfhqudpCNA0hs/2JSHiVZV/iRzWKzf6VJ19yL5OFxrryVqCXkXdOX/2UutEn1BCupgyCynT9ZPPJOq8ncAaxz3Ap2L6e5YA12x/pEiMfvsEF4AdIkwRA4tyzKWD0annc4tboXfoLwFwgBK2JqF8H88cmTK8lSG4TkfAeEjtHy1QDTZNrQECwSJUWCClt5ox0uORwNirM6+TVDfdD9TH3SOJby7a6Uug4eP2HA8t6yRqpraCeEqbNtb1rTHjMaYHz2/ztz/8zFOgcZnbmQhPuDLz37tCCUDcq7zBPPn9I92vAgl7FZ31MXwbohHCjx+63fb39KesFxOGkmiMN0AkflFA5ak6JX+od/+YztQERTy5kRdKC+zcPws/lYf8leP97RuGOu9fUMV4TasqtSYDJRqxNUTp9OYUGoUno0uJ0v/35Uc189QqwG9dMSbXPzEhuODv7HKMQrwcnE7BtV3xmo0g8i2s/20TR+oto84NE3P436WEv5/BAtq2e1dnBDDCRDXDzI/ZUV68OA5J/alzuKEyWDpAcBC0M/kRXk6eJVY+XYnkWQrJbbq3bhaxiHPRowYQZHSDrbMgdZCC/u9GX8HkpleeSXGj1J+fWFDFZcP6SjkIRAjz0SnE3AQdFIvIKudI6DVzW2f0pv9VIhGs+cQBzv+n+kqidR/7wwpm3dmIrJAKtv+AapBFUAvhi1LyqOY3z1Bxy0LHhaxalcS4X2urGk4fWKiADK51GhSycdHfJg+9DsctAllRJ0o0cyT1RFLIyoSJ91ltUEN0Q41MiXyT5y6m1N2YMzB9gctuL0OYHd1I7smKxCY7LqewPUBrngiPihy/wnRpNZX1JBAZtLEw+ekNZSnCZYav305Oy7g5tdC01iyQSql1J727L2rEVmR8r+qbG9wFMgiJlDK7r8AJg8HDgqZ1a13TivsUJCVJSYoxtipx6eiue3gJAmj9ARGqQ2dByKsr1IMY6VysbZl6PymhmcZ89kU/JbedyCxfuy9sOo6p4ij+Vtz+uTwNP/riboU7E5c1E8Qm8RB+R4pUqpbzT+bAzgLxGRRDCQENjQsMW0EKCKnAEFs9tckh2H6LlNCuU//GE+7ehVg15A0kQhWv8miIqOrM5Xi0/EcwBftYEuTJZGHy1gCddHTkudXBM184menaN9egvZsHzj4LZSNvYwBCJdEJpGuBUlIkXnPfgChRdfe5b8WagaGOR+dfxz/yBLvtDzv+AG01QzvIt+IhGrKXjzDRsowf6+x3WdPRLolQM7tu+mVWigcmmVPp4lC6uBl+wJ25/7ShQL4fotLIuS0Sly1DlC9zbq+ySVdXEoqaqCBIVvwqeTNwv7tKnB9gWabfCkC/uFIzfNR+BArkdDF1Res+kpusvNWoBQCVAJ6z1K/C5OzzNxT8y4KMYya4fDPGGV3qMNFyr8JTiUdue1x+n4MfJ6FZM6Bz63Z2mdmzUusYRxJZD3d1t1WDYcbNFKZtgZQaBMRYbK6G42aiWn45I36YC7zK1uEljIwa15h5h6fNt20DP2wYACfO9sNzAaYGzY/tru5IKWmbskSO1jnAPPfGwMFAZ6CXU439ojoMJmE4DLa4h+ounqdVhlP/siaWLHhmUDFH3uVuVl5gN68ftT5CVshXKGIwJPVWoq3qVIN2K/5ckQwFJiyUCFRqJTKADT6GVTOtr06AmzzeLoNaqeCEO4VIJxVttoN0NHsfITk0BEJjaYCtyeS9n6ebTOilCIt8GBxd5yqPenaDYp4Spdx+Y1L/ZrZTocEa/aLr4ITvbxz2KCDh8ECMgLZF41AhQuoXoYC0X/KfNhqJQdxVoR3N4/lYMTLuCnD6HdXNcCKMYRa9C8pfjhRcksQpYu/+pjP6xbu8SrK83o6+gxQTYPlDnuwN0Eg5BwgbH6gflmj5yrbmaknBMnobFIfMzGVMdu7tmr6gZtYKgd3776+FE+8oUxXLL1CxKSk42VPeIh9kYp1a93EY7tROjsEre4JkX95NwNpqQl+voaNK3x/aHTv8rTvv6hX8kX5+IoT5yxWTcu2BnG8Dn1LM1V6jjw+P6B+VPOi1tfGtv6a72drBsSia9IOV1g2tS5mKzISawygUufoMim14korLLIez0NWiRnF1kLGSS6ctpaz7VORNLSdzug0D5rg3elbMP/NHSJmN4HUCP7NcKP6RSx8o+gvLbH0jx9bKGTvG8LwQYKbOaekDER5LlaZRhd+y0FblvOcL03zUYxOkjPH2gcW1688ISmYm8jNH3Ai5tu2kpNc1CK1h+80k3VoitXyZUp5tpAeQTQu82CDLXpHU6KfGK5PeCbFsgJB02fns41nVrHiYfE914RMN3WfVABJt3RJYyUNpDMPxlHLW03VGzC9sVEv7Sx38QXT3UuUNW5cRrg+bKHgSfZ3uLTosmdBJx2f84todWZ86qKmAgkUQtY/Kof/MCY6kM6Up5o8SjxH3OAvgUTWdXAlb62Twxm6P1q5JlUEOxsYj9urA2V39IeT6RR9Q5dEfx9m6Lm0u4lHch8ht4XwGxKDZ28AVobsLxW8NJFwr3ZxMmZHVslfj//eM1Lnvwb1Nn92M7mZ3FvUYi2Dd+1DhdkDjkdRWhVLx8e5StxN9CsR5OBdzGL/AJ6ClfUBsMuaxtEEoyw3zzbHIB56i7uFkU3aehu8WuyqCHQ4x/EDxzEjIPY4qUWy0Bvpuk7f5aGd0IM84+E3VTguVZQDpOlrI7cimqUyoOFJoYmuyvcDhGYNQSDTV+QHbRo0nlEz5wn+10ajd3HiBBEZ7wc2u2jVi1BXvij91kjE/VrYu/efW2crkvXndO/Vf8tohamFmMoE0iH680S/U9vzkLxEbVPr3u/SHwFl9thsc3JNhL7VEia/Q59eJOexmVHmsgPgkutMvyYODCNBeDlHOKrDhQ+KPzgvIejRArfyPfgXd69jqD/L2ccIiAzITQ+lOpIK7qyCR+PlQSzpMRWCdMoTIJt99a00/MTETeDvIEZxokY+Weg15Lvztx9nvGY8QcFrt+FyfWinGBBYOyCjyQtbDeclU72WOUgMsA/3p0RPdPsdtjO39C35iE/ilV4ofd5mBSOhGNBuSWeY9JD7nzD3Fe3SAZXbe7RdWYZxeGlx9j/TcIQtc28cpb0mxn788/dP401JLCt4OOeKiFn111y3jGqjbQB2lF2R0R1gjfXCBc8VxibW6v6tF1msOTh7CdD4+uEGtM7ELd5aQ3zktdRpiQ2zsn9uFY0Apo30/NPgagNcEhv3SNFpFw8FM8ohOJBlvtevIPQ62qbeqCzLh5BBheBkE3cGqmIv6xvnCkGj63RNtvry7TDqzkCNGARI8t5LqpF1z+ylqtBV2a65YSKfY1Tp/mH9R7pzDaoZaEET4kShCmN/Mi+AS/MPc4D2G9DDPiTTw2xxxRxTPM7R7nq1QWrzdH/CyVhvmyhLhyiXyjVaKuDITdM69Jz6Q7j2NXq4bTRDqjGWcSHJr2d9zX87rHK41cDGxW/PorHT/a1gGB2Z2+RuMrAcYgfsqu92jh3vtqS5zt6iSnaACsJWaNAuq9Q3rSL5cFHY6ROvAxxk1A8Bk5exfFCmPijCqfpkM4vAwfCojrbsQOc2wj+3ZoseJkJ1UusBn3M4ebHIYd4GhjRL+B2TYWRkBmnNSiOjE2muHa6Xdvzyz+w5V+ry3CRz5k6Rtdb66gQRID8yKl8bmagjXpYES2cW1rd7W3XyHbRH8v/0aSyNtKgfpXfwbJfvqFPpbgmEgZc6/GVSwMdm3HQkwaOmTHedLDjeIVpKhX7lGY1hbJulogRsdPGFf5kEn5YclGCtrMfZXyapae4KAcjWaCuoYrK2Fx6f68JyfJJnEobZDPZpSLHSgaaBuGBsUxFDAeYXfv7T1EKD3ASTT9FRmD7Hyqsha3+p/FSLAdxN/IgcvJco0TP1Sr80IzzGaXMgQpfof47E9f+vplSDlFq8KMMrW+z4dZqB/joMhSLHyoPbirVuWeaS8yn0AUfNz95KALtFqeumlXfpjYwO3SSV+ufnMNyDno8PpQgnSh/t0tvVXNdifyevhBVqgVa0G+MgEBQKJPTZd2JsmMOGV908BibX3seadjwjfWqHZ8m+EYEkuT8TiaM+AWIsjlMkKT1HbBJjuasYTCl1/S6Stm46klpeMmSbXKsCSmcLPgmZRXFlvrEvGifVnAE5+DNL6XyZPAcJF126v5hVWrMrLpSVCBU8gMXuv2nROVjzr6Rfq4qz9n2439HgwYqyQ/AJhgihek94FTTZ8F48SiCrQ7IWLZftmHUwEvclLsprSdrZLeCzA54U/XVFUTcBAKePp9sn1+E+QWRxN9p5678ije4xi67YGdnzlajyLptyWRkT/7v9PN8NbWjhT/QZkdm7oZznnmj+gYMvouGpgDOwyA5JXFpGwF/7kJnL7MBnC9wSfxFLY22QD8TKL3ffFMJ2cLr40MlkVcaNic5RBEaumbnV+J27QbjYDzfn3dfifqMAm5+vvYcDlRmatPwKJgt3+rwDL8jyYBK/RGzRxYRPN1HNabuv2k4SgX5I+yuePjUnXR8jTUrHg17iDMB5XEiX+zFoiyEOdCP53u7ydNbM6qK4+WalkWeK5AsXchszyCq3VeH8FsxfyRLzqotPqcNHm5IrSK8oc8LGMORPVR3JekuJkhoKLUM+akF4TtQccKXRv0i9pgnHbF7hVb4mk3xgnAHz5nOc9yMcspmhijs/bCkPhcxQpDAOkIZe327qAaMOhhmHpv9L4sVjN49pQcmGPxNaddSxSBnJjXufRuzX5U8WgJ1g5Np7Gw4quTLf6TZ/ipBu1ZF2u5wMNQifMM7y/Cbo3hG0SsFtjGHeMKxizydserlhTfyGtHOcJGCeyng94SRc2/tAB7mBKHw7qpgThZ1NOsMgzA64FhlNsHM57tWEfOS/9NU1DOcmHUj2jT8TdiKTR8kzeBITBsJ6pz7zP+fdeJuqv9diAFw+EuOraOYqQ74bmcsqd6atr8Hd0Hmo0D9tiRfNWH7IBR0NCB7241nSq026zkbtpexfe6bWeZI8Fa768ET3bhEy31h68+o4Sht2xJUuwVgUHDKKHJcQzvRDXVMjZLvmv0fM9dE9RHzTYgNSu1NVdL2I+UKxiQAOO1Oae416UvYQcj5SjLz9cFZelt5b9ZNaw0JwAFbMZHw/9Ero+ppU9YNsnW12WnQg3ahzf/hTxMaseLiFUMj/F68mE1tIikAjXGpIEmcrkYLSh+9+XYZbb8vjVB3zUYyHCjDCtlZ4jXWOYO1WD0zfvY1N96tnSfN/XhKtxVAj2DEAz1BW3I8n6zcASt6RlZSAiqs3FN8KgpepqlPZYz2tiJV1KKTZ/LdTJM+crFYog5T+gVW+yiAL2GfS3Q6s8fH6tzpcY7myKdGQbTPp0m1EWFleywQbJzg0UR2wqfIK+ICy5fnfRhPU9Mwk9G4x02jhodJmOSTqG+amj7b4A24FZ901QnDurv5ldD2FekMNx9VFgXPDAyfXJJcD1v7LfJxyw6HNgLGOCvxdvS5GsbGIA6k0+nP/GpJyf1RB2wVG9K4+dpg0BGi91Hxm27y8jAyfJM4bIf9f6EChaCc7cM486YBgzLqiLiln0R+mgpnKiAkuNioxoOtUrICfggBitY+TkF331tCpAC8W80AJrmMKXjAiv+vdFlKvpA5V+EMtYk91XvuCDgkQBFJZDQjz2e+UcNxCLqFi2U54N7I8ssP8l0aLXlBQGoF5OJ/63Lu7nWEaiucqKEkl8x1BVrQTc1vnxElnO+io0e3EWGLELybNwyevF35D4D63zVTgEmWa8dmJDtVIysV38y+TFEuec1eduMwpG8OuTxjen/SAWqUCCqAyeK7MvXGaPs5RjEoFqTr4oDgdvTiyXM+pqbhtb0M5k7tJAqKWoFzzGMc16/tviZN9HLplTr+cTZzQ/fmDuuu51AqQ8nei0M17K4EkbqZXst9drk1lmnd4VZ+yfGAC0YWi1IfiJRtp+YfwzZYedT8pIss7W9XltZmDnn5TZ+ClYyikP9viLIWp6U/Z5VJl5MNY08CgTR7If+YYwkbs9lf/L202Oh57nvWNvWr2OuSZibEhF8ndGMcNBlpXcOIabTMGcRx7Eneijwo6i+Mw1t0D+cqhuLxhuLZexrIdRXJ+IIxxfNQSKD8ZUfS5d3A0TxPvuBJjQdIzzdul1yCCSoC26v2osqu015nEERB4ypT1ER/4h9I6OfVwApJ+xBGF8qMD2DK7Swgzdi6966hQG8TK09xbxNLnScYjNH8VotqrLbnxtVE+5IzgO43Xewu56T+WGWYMX26vHCM8H6JkLlTrRw2LLQgsAVuJ8qb6gBEP3XaITL06r6RA/KA5d12zjf5XIqLbaj1Wf1lGf2Sqd2SfInxtn4L+Y/eemqsv94E/4aJCuE7JxpHvLNUdhdwYlEb7Nqt5UT4D5Zqm8nxRnGXGv4RsJr13rmNNketSp0sx/jxSQCoghLaPv5oyJg8w/V4jKu+pk3oYNh9/Jealkio1cCEjf5VU3y/y+mvnhdRrjoKoKT8yWe/bL8tAgZ2uxAwSSxCXCKSjwSO3T+g4UX8KMc+7ol/Cp/NCKRvTc/lkMj0X/WIhtZz7LQMEB3DfCza47wEClB71lbojJrUxEMjhEdoeL5hi4KfkoJyHY8CHFtxh+1TigTqthzQWvYwvpl/JSytVXbY61RbGBxRgTvWRsC/O3SRhN5UMFq92IP30BoxuO3KBL7StJqEOia4IRS/uP0riv8Ir0iqGtRq4rz/GlnKAxYiQs/gVImISMbMuzuzfKWbNDmfST//L3bBAZmWSYQQfiOpmuYpYJsT4FwHnaDTZo0H2yNQS8kT+ns13n9vUFMMJwJm97kW7M9m2b+51GMlXHmqQiJZP0+OZzf7SI3uaR6spzMTVv/KFXMBuokvO4RQRflqwQcBmXx6NK2q0qoc7xL6zxj0afJ7W9NuOIsZJPjR6aLusvmaXYw4b5mgyY6Hz+M7be1zVw4rkeFiBNBQ4yk9hdeGgkykSWH9FbT5SevDFMlP2nquzp+jxNuXD4t9adX0x0oW4FZNAW3vvt67xSawurkeUr1+yCIuLadCfNFpTeWh1kxpxSH7FGDcMwYE/Ew6AEt5mceTEH8aUE//xqvAqbaWW8L+TfAB+e8epkdvrlq8ygwf7cMitCxxXfvXEitGR7MjllFdnZxWOhFgKX6wpaZBV2vwOy7QWaVYwticnHdnYzndwCflDMTVzcLSOrj1ThCcaQ9yOaHdXyJ2n1iJQfDJiufagqv5vgrPISLpf2IZQgftoTOFAccF0YAnzRUI3AtOUyOkB5rfD77cQvffptspgWNw9lKKKZshsE2eZldriypAP6IEZ9/fLM1Ji8QyH2Hi4KhHBq6F8NfUji5gt97bzn3NRERm0DI+nsjct+VKncTxz4FJpJ4YoMO5cAtYeZk9cLPawYl6tcgzz/pjbjy8d6VzHAN/yudQ9M9pU+8Vcfhc6dcJUubWUjLWKUfEnaahlDCTJqTsPse7k1C/otLMA6q4YNEKi1rVqqo3Gj1R91afI491oOhxfMgIS+gDkZLjg8nq5qBtb/VyzjLwazA9A7REGyy8KtwFGueClga1C2Eae+qdqbFQmu3Y56VER1Jf81WvfWB+/z7h8ruGBOtUCi1nGu0b5LoC7+pejGvk9TD4YHPwO+YFU2Nju3eJrTe9n6qFAQezVMTRatrEngQSbpVwXbfp950UciopoCYj77lgUYBkLr9OKlZUVykA8olfzYyN+yUg0S048eajGnX7nBYBKCo+nqq/qP0Uvtk0DRtBrkPAGXLEtngNo8p2uqPs786fMylorJtl6nVJbwFfsBl9t39uQ3VKq7DUK7KDIr0BlPnUDdrdCh1sm65uwqVhoRMC+aX+upLzGrP3YYK2NYrhjpGLm4W8loOcm/d/axk+O8lxkw2Xw3ufeveDzUdlLq+Wo72xIJhfdb5cs9nSUu/ktHkXpKHnSRpHtnG1XqfAZyBZn1p8tyG1swo92QVYpccQggLRJFeKmEIsu00IB80VsGJ6Dc0KV5YSV9O+3PYLw6yx0YmI3CMvD48Nqq2hLCQF5fmUWWIlSrb/HxKIAprCNUvfITJlm12pm9sIW6P+JZTlrCX9sZ/9jF+MmmFuh58wtcXBCa/Rzq4XoOB2XKB5UmEXBfPzrzZYJRduCucxNChhTdksHqHM96qvuhAN1EsatWpT0Fy0tVG5Ua6r4ngKgBzc9cJpofQRV/fvgwEbYjgfUxuT9jjErUvr6JG0rS9qW5yHq4shBJ2uaamiHgswjsB99Yq5IIP/r+kiNZpJZgwekyP43DEJ9hdmrw6GJ9dcGV0Bi3gqzai1WFd0e0h8/ZVokb888P1Y061ux2txbZQ3Q/L7t1ErK9DxaKoJZotBd1+fnxxib1yvsOyW2ggdPf03T7t5pvKO9Xoua+8AXyEPiOg33NJ6iSSawTA1qqY/78z0ihVExiCl10YNVZd20nkg7m89eax+12dU/NsxFB2o85FcSuBJM4/0BSZFz2SYVVI4xNbCXcnF0BcE+RnPfoG4Qi6CD+RfYRfeG84lPcjsuICsFSeg9uoK2U6P0fchDS+BYct/n+f5rZ6QSKGhwzR+EgbB8lIfL+slv7omE+VA4SEpa7OOSyAA/OYqYmpB5byqf1XygHsDJZF112Pdok2Kr1lkKqNKxuEoM7vGieozJz10FCUvJ+6zq1HgKaMwMpLrKD1kkMzjvHSmZYBP4uJsYrpLlu0IlS3FOCZniqpdN2xH4je9gAcpFeZddP5kjb6p86Ovq6fHHb8J/n6MjiFJplJlcyks+70XApGa8b/BQvyWgfAVVQ4OO00TpLFawyVeHnJ3IAx0VR1W8ilqammA5QcuAA10ylvp4H+Qpc+hgxRkAPJm2swJgPzPuefi88jEZKHowVxwjgIEQIJqWxv1XS3GYn6xMrcLWQwP9J0ViIBhApIF8M0wbnhoNOUm8QF9pntvHeaU70sOiBypKdqOhlsUEDyhTYUVHiZs1N6M26pjmJCU6QGZmb2dNpbvdl6oS0BgCnXr8Ub3mnbPe3AAhDb4Yez08BDFedHWQXyHa5zUMAtzVKmgISgQ+XAGTh8uJB4mdzjbpzywU6xHLa6BDpxwVEG7yJnmZQW5I41rh49lYpKWDB9mZgims8tE3EUDTlorx3uz+z83qKwXMuxOGFZ0XpxvznyadjB0oQqdaQ20TPCh2v35bJQ5pA4fIHI1nies2ugMgOzk3JcvlWHqJO3mTG5vd8lG0BLGSWKSCJ/dh1gV6AJ0R7HmTqjyqg0J2LuxoQHveVD6LLNmyzw1EKa/o6zZT3utUQYNjPXtW+Lus8chrUA6x8OYnlqxZiEc4MRFoWEJzVNPh6AP+7TWw7AeLCGv6O7wM2gtrhnZUJCyCI2aY3a+NThgxdOxAO/Ti6uroyfXrFGJ+1oUjw/pwsBtuB2g3z7yI3SkpexCYQkHIu01q5jPw5DDU7DwArkMp9ngXZ5drftKHHGqiZMJXOsC7QrGoZTdu1m9+GFbtggnZ++D3QLDW16IjWqLFZs1z3tIs4gp1C9HoIMG0otu7gkCZhHSjLoFlS9iISC6L/H0eNja7k8ayLuDmnZ/J0ky+oS3Wa9X14gDxBMCtX591fXo7eZCRhmeYrh/w94JdN/htB3hkk36uoJSqtIWkZ2MgO5ruuumAgzKWjOQZrbAMBZck+/7Wm3Nb1Q+L143kDUOe98YRLoMsOY3z7CzREw8OTfx2bLGzR31wxCTGd5RJnaZKXYtY0cUXEbyZgWrqfE1wBkYVxU+T/z5AFVZDwQzOztU4dDhm2eY+z9xVgENdfuj/BAAPj9LB1npxzu23xpvsa2AMu7Q4j5n+c1kY3yKSeAA7VVkFCALQ7ZLQ/uh4o4uZOu3THAn8hyH626WHwLIei/pmDHDk7c+V9L3lCha94NNWN5omNeKIfVVEkzPVPT9IgVAZBqCS+2PqgAWJyAzV1DxZsp1lTNZh532PQwGlalx/IwX/aeye9C6yn+TPjWCFJyKuNs7M0DhGC+fovTUnfbkYSwGsd2bPKtwNwgW1byYkAbAKrrXtNDfbVbnKNi3xpxkBFswPX8jKbb8j4wmK2rJSArgOfe34O7vUcXs6SdzmIUoe5DUKZgQEFWszNAdvCy+vNCwH/iR/hcGAxQdXqLwpcRrxPzEVqvXg0AAAAADAAAAApYvgNYLsBhQfEAAAAA38HRcWFV1yzVuc8FFSl8x7D8cJ9LeRL//4MkFmPSv19iUqULCs1Lbf+G//oDNUpSEL/a0vLXKi2j91kX1vwF6yFfyoR3MNaq1RHmIXsxsfoEKYLX0cqvBgm8EZRjH33c+1lPfi4pKlDAUyOA8vwHf+FtI1RIbMaA5innfx1WdgPAt3/JPg8JdYn+fj3Kw00tU7DIKhDYXaj2EX3s5VEK3F4UC/GyTMuSTcx4I7SWu+Qx8RWIihYzoXCMaFDZa+UuoBxwOEkWZZ8uZIc4ExPYem81U5o3xsUvP/5sY3fiL8Y8jYRyrU8dKEu9MtCh946IhFmeJg2P4y5lh0TayHv+rDYMzi5+e0zq5SRN0nxSbMiIN7bNjVEOO5WypAFAhI001mKKMT9fy6PepaqFw2DRAm4t0gLWdVFUIavGAAAAAAAAAAA"
+        alt="Interlogix. Excellence in Motion"
+        width="539"
+        height="120"
+      />
+      <span class="sub" id="subtitle">Solicitud de chofer</span>
+    </div>
+    <div class="lang" role="group" aria-label="Idioma / Language">
+      <button
+        type="button"
+        data-act="lang"
+        data-v="es"
+        aria-pressed="true"
+        aria-label="Español"
+      >
+        ES
+      </button>
+      <button
+        type="button"
+        data-act="lang"
+        data-v="en"
+        aria-pressed="false"
+        aria-label="English"
+      >
+        EN
+      </button>
+    </div>
+  </div>
+</header>
+
+<section class="band"><div class="wrap" id="band"></div></section>
+
+<main class="sheet">
+  <div class="wrap">
+    <div class="grid" id="shell">
+      <aside class="map" id="map" aria-label="Progreso de la solicitud"></aside>
+      <div class="main" id="main"></div>
+      <div class="extra" id="extra"></div>
+    </div>
+  </div>
+</main>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+  (function () {
+    "use strict";
+    const KEY = "driverApp.v1";
+    const PHONE = "915-260-1375";
+
+    const UI = {
+      sub: { en: "Driver application", es: "Solicitud de chofer" },
+      mapLabel: { en: "Application progress", es: "Progreso de la solicitud" },
+      mapTitle: { en: "Your route · {n} of 5", es: "Su ruta · {n} de 5" },
+      stopsDone: { en: "{n} of 5 stops done", es: "{n} de 5 paradas listas" },
+      minLeft: { en: "About {m} min left", es: "Unos {m} min restantes" },
+      allDoneMap: { en: "All done", es: "Todo listo" },
+      stDone: { en: "Done", es: "Listo" },
+      stProg: { en: "In progress", es: "En progreso" },
+      stTodo: { en: "{m} min", es: "{m} min" },
+      edit: { en: "Edit", es: "Editar" },
+      eyebrow: {
+        en: "Now hiring Class A drivers",
+        es: "Contratando choferes Clase A",
+      },
+      welcome: {
+        en: "Apply to drive with us.",
+        es: "Solicite manejar con nosotros.",
+      },
+      welcomeBack: { en: "Welcome back", es: "Bienvenido de nuevo" },
+      lede: {
+        en: "Five short stops, about 12 minutes. Your answers save as you go.",
+        es: "Cinco paradas cortas, unos 12 minutos. Sus respuestas se guardan solas.",
+      },
+      ledeBack: {
+        en: "Your answers are saved. Pick up right where you left off.",
+        es: "Sus respuestas están guardadas. Siga donde se quedó.",
+      },
+      ready: { en: "Have these ready", es: "Tenga esto a la mano" },
+      r1: { en: "Your CDL", es: "Su licencia CDL" },
+      r2: { en: "Your DOT medical card", es: "Su tarjeta médica DOT" },
+      r3: {
+        en: "Names and dates of your jobs from the past 10 years",
+        es: "Nombres y fechas de sus trabajos de los últimos 10 años",
+      },
+      start: { en: "Start application", es: "Empezar solicitud" },
+      keepGoing: { en: "Keep going", es: "Continuar" },
+      savedHere: {
+        en: "Your answers save automatically",
+        es: "Sus respuestas se guardan solas",
+      },
+      back: { en: "Go back", es: "Regresar" },
+      stopN: { en: "Stop {n} of 5", es: "Parada {n} de 5" },
+      qCount: { en: "{i} of {n}", es: "{i} de {n}" },
+      next: { en: "Continue", es: "Continuar" },
+      skip: { en: "Skip for now", es: "Saltar por ahora" },
+      optional: { en: "Optional", es: "Opcional" },
+      yes: { en: "Yes", es: "Sí" },
+      no: { en: "No", es: "No" },
+      required: {
+        en: "Please answer this to keep going.",
+        es: "Conteste esto para continuar.",
+      },
+      phoneErr: {
+        en: "Enter a 10-digit phone number, like (915) 555-0142.",
+        es: "Escriba un número de 10 dígitos, como (915) 555-0142.",
+      },
+      needJob: {
+        en: "Add at least one job to keep going.",
+        es: "Agregue al menos un trabajo para continuar.",
+      },
+      needConsent: {
+        en: "Check the box to agree before you sign.",
+        es: "Marque la casilla para aceptar antes de firmar.",
+      },
+      help: {
+        en: "Stuck? Call a recruiter",
+        es: "¿Necesita ayuda? Llame a un reclutador",
+      },
+      copy: { en: "Copy", es: "Copiar" },
+      copied: { en: "Number copied", es: "Número copiado" },
+      stopDone: { en: "Stop {n} done", es: "Parada {n} lista" },
+      nextUp: {
+        en: "Next up: {s}, about {m} min.",
+        es: "Sigue: {s}, unos {m} min.",
+      },
+      takeBreak: { en: "Take a break", es: "Tomar un descanso" },
+      breakToast: {
+        en: "Saved. Come back anytime.",
+        es: "Guardado. Regrese cuando quiera.",
+      },
+      doneTitle: { en: "You're all set", es: "¡Todo listo!" },
+      doneBody: {
+        en: "Thanks, {name}. A recruiter will call you within [X] business days.",
+        es: "Gracias, {name}. Un reclutador le llamará en [X] días hábiles.",
+      },
+      whatNext: { en: "What happens next", es: "Qué sigue" },
+      n1: {
+        en: "We check your driving record and past jobs.",
+        es: "Revisamos su historial de manejo y sus trabajos anteriores.",
+      },
+      n2: {
+        en: "A recruiter calls to set up your road test and drug test.",
+        es: "Un reclutador le llama para su prueba de manejo y de drogas.",
+      },
+      n3: {
+        en: "You get an offer and an orientation date.",
+        es: "Recibe una oferta y una fecha de orientación.",
+      },
+      backHome: { en: "Back to my road map", es: "Regresar a mi ruta" },
+      demo: {
+        en: "Demo: nothing is sent. Answers stay on this device.",
+        es: "Demostración: no se envía nada. Las respuestas se quedan en este dispositivo.",
+      },
+      fill: { en: "Fill example answers", es: "Llenar con ejemplos" },
+      filled: {
+        en: "Example answers filled in",
+        es: "Respuestas de ejemplo agregadas",
+      },
+      reset: { en: "Start over", es: "Empezar de nuevo" },
+      resetSure: {
+        en: "Tap again to erase all answers",
+        es: "Toque otra vez para borrar todo",
+      },
+      cleared: { en: "All answers erased", es: "Respuestas borradas" },
+      years: { en: "{y} of 10 years added", es: "{y} de 10 años agregados" },
+      addJob: { en: "Add a job", es: "Agregar trabajo" },
+      addAnother: { en: "Add another job", es: "Agregar otro trabajo" },
+      saveJob: { en: "Save job", es: "Guardar trabajo" },
+      cancel: { en: "Cancel", es: "Cancelar" },
+      remove: { en: "Remove", es: "Quitar" },
+      fCompany: { en: "Company name", es: "Nombre de la empresa" },
+      fCity: { en: "City and state", es: "Ciudad y estado" },
+      fFrom: { en: "Start month", es: "Mes de inicio" },
+      fTo: { en: "End month", es: "Mes final" },
+      fCurrent: { en: "I still work here", es: "Todavía trabajo aquí" },
+      fDriving: {
+        en: "I drove a truck with my CDL here",
+        es: "Manejé tráiler con mi CDL aquí",
+      },
+      fReason: { en: "Why did you leave?", es: "¿Por qué se fue?" },
+      jobErr: {
+        en: "Add the company name and start month.",
+        es: "Agregue el nombre de la empresa y el mes de inicio.",
+      },
+      jobErrEnd: {
+        en: 'Add the end month, or check "I still work here".',
+        es: 'Agregue el mes final, o marque "Todavía trabajo aquí".',
+      },
+      now: { en: "Now", es: "Actual" },
+      drivingTag: { en: "Driving job", es: "Trabajo de manejo" },
+      gapNote: {
+        en: 'Weren\'t working for a while? Add it as a job named "Unemployed" or "School".',
+        es: '¿Estuvo sin trabajo un tiempo? Agréguelo como "Desempleado" o "Escuela".',
+      },
+      agree: {
+        en: "I've read these forms and agree to sign them electronically.",
+        es: "Leí estos formularios y acepto firmarlos electrónicamente.",
+      },
+      readFull: { en: "Read the full form", es: "Leer el formulario completo" },
+      fullText: {
+        en: "[Full legal text from your compliance team goes here.]",
+        es: "[Aquí va el texto legal completo de su equipo de cumplimiento.]",
+      },
+      sigLabel: { en: "Type your full name", es: "Escriba su nombre completo" },
+      sigHere: {
+        en: "Your signature will show here",
+        es: "Su firma aparecerá aquí",
+      },
+      sigDate: { en: "Signed on {d}", es: "Firmado el {d}" },
+      submit: { en: "Sign and send", es: "Firmar y enviar" },
+      choosePhoto: {
+        en: "Take or choose a photo",
+        es: "Tomar o elegir una foto",
+      },
+      changePhoto: { en: "Change photo", es: "Cambiar foto" },
+      photoAdded: { en: "Photo added", es: "Foto agregada" },
+      chooseState: { en: "Choose a state", es: "Elija un estado" },
+      tapOne: {
+        en: "Tap one answer. You can change it later.",
+        es: "Toque una respuesta. La puede cambiar después.",
+      },
+      tapAll: {
+        en: "Tap all that apply.",
+        es: "Toque todas las que apliquen.",
+      },
+    };
+
+    const STATES = [
+      ["AL", "Alabama"],
+      ["AK", "Alaska"],
+      ["AZ", "Arizona"],
+      ["AR", "Arkansas"],
+      ["CA", "California"],
+      ["CO", "Colorado"],
+      ["CT", "Connecticut"],
+      ["DE", "Delaware"],
+      ["DC", "District of Columbia"],
+      ["FL", "Florida"],
+      ["GA", "Georgia"],
+      ["HI", "Hawaii"],
+      ["ID", "Idaho"],
+      ["IL", "Illinois"],
+      ["IN", "Indiana"],
+      ["IA", "Iowa"],
+      ["KS", "Kansas"],
+      ["KY", "Kentucky"],
+      ["LA", "Louisiana"],
+      ["ME", "Maine"],
+      ["MD", "Maryland"],
+      ["MA", "Massachusetts"],
+      ["MI", "Michigan"],
+      ["MN", "Minnesota"],
+      ["MS", "Mississippi"],
+      ["MO", "Missouri"],
+      ["MT", "Montana"],
+      ["NE", "Nebraska"],
+      ["NV", "Nevada"],
+      ["NH", "New Hampshire"],
+      ["NJ", "New Jersey"],
+      ["NM", "New Mexico"],
+      ["NY", "New York"],
+      ["NC", "North Carolina"],
+      ["ND", "North Dakota"],
+      ["OH", "Ohio"],
+      ["OK", "Oklahoma"],
+      ["OR", "Oregon"],
+      ["PA", "Pennsylvania"],
+      ["RI", "Rhode Island"],
+      ["SC", "South Carolina"],
+      ["SD", "South Dakota"],
+      ["TN", "Tennessee"],
+      ["TX", "Texas"],
+      ["UT", "Utah"],
+      ["VT", "Vermont"],
+      ["VA", "Virginia"],
+      ["WA", "Washington"],
+      ["WV", "West Virginia"],
+      ["WI", "Wisconsin"],
+      ["WY", "Wyoming"],
+    ];
+
+    const FORMS = [
+      {
+        t: { en: "Sign electronically", es: "Firma electrónica" },
+        d: {
+          en: "You agree to sign on this device instead of on paper. You can ask for paper copies anytime.",
+          es: "Acepta firmar en este dispositivo en vez de en papel. Puede pedir copias en papel cuando quiera.",
+        },
+      },
+      {
+        t: { en: "Background check", es: "Revisión de antecedentes" },
+        d: {
+          en: "We order a report on your driving and work history from [SCREENING COMPANY].",
+          es: "Pedimos un reporte de su historial de manejo y trabajo a [EMPRESA DE REVISIÓN].",
+        },
+      },
+      {
+        t: {
+          en: "Past employer check",
+          es: "Revisión con empleadores anteriores",
+        },
+        d: {
+          en: "We ask your DOT employers from the past 3 years about your safety record and drug and alcohol tests.",
+          es: "Preguntamos a sus empleadores DOT de los últimos 3 años sobre su historial de seguridad y pruebas de drogas y alcohol.",
+        },
+      },
+      {
+        t: { en: "Clearinghouse check", es: "Revisión del Clearinghouse" },
+        d: {
+          en: "We check the FMCSA Drug & Alcohol Clearinghouse. You will also approve this in your own Clearinghouse account.",
+          es: "Revisamos el Clearinghouse de Drogas y Alcohol de la FMCSA. También lo aprobará en su propia cuenta del Clearinghouse.",
+        },
+      },
+      {
+        t: { en: "Driving record (MVR)", es: "Récord de manejo (MVR)" },
+        d: {
+          en: "We get your driving record from each state where you held a license in the past 3 years.",
+          es: "Pedimos su récord de manejo a cada estado donde tuvo licencia en los últimos 3 años.",
+        },
+      },
+    ];
+
+    const yn = (id, en, es, help, extra) =>
+      Object.assign(
+        { id, type: "yesno", label: { en, es }, help },
+        extra || {},
+      );
+    const SECTIONS = [
+      {
+        id: "you",
+        mins: 2,
+        title: { en: "About you", es: "Sobre usted" },
+        qs: [
+          {
+            id: "name",
+            type: "text",
+            auto: "name",
+            label: {
+              en: "What's your full legal name?",
+              es: "¿Cuál es su nombre legal completo?",
+            },
+            help: {
+              en: "Write it the way it appears on your CDL.",
+              es: "Escríbalo como aparece en su licencia CDL.",
+            },
+          },
+          {
+            id: "phone",
+            type: "tel",
+            auto: "tel",
+            label: {
+              en: "What's the best phone number to reach you?",
+              es: "¿A qué número le podemos llamar?",
+            },
+            help: {
+              en: "We'll call or text you about next steps.",
+              es: "Le llamaremos o le mandaremos un mensaje sobre los siguientes pasos.",
+            },
+          },
+          {
+            id: "email",
+            type: "email",
+            optional: true,
+            auto: "email",
+            label: {
+              en: "What's your email?",
+              es: "¿Cuál es su correo electrónico?",
+            },
+            help: {
+              en: "Only if you use one. We'll send a copy of your forms there.",
+              es: "Solo si usa uno. Le mandaremos una copia de sus formularios.",
+            },
+          },
+          {
+            id: "dob",
+            type: "date",
+            auto: "bday",
+            label: {
+              en: "What's your date of birth?",
+              es: "¿Cuál es su fecha de nacimiento?",
+            },
+            help: {
+              en: "You must be 21 or older to drive across state lines.",
+              es: "Debe tener 21 años o más para manejar entre estados.",
+            },
+          },
+          {
+            id: "address",
+            type: "textarea",
+            auto: "street-address",
+            label: {
+              en: "What's your home address?",
+              es: "¿Cuál es su dirección?",
+            },
+            help: {
+              en: "Street, city, state and ZIP code.",
+              es: "Calle, ciudad, estado y código postal.",
+            },
+          },
+          yn(
+            "moved",
+            "Have you lived there for 3 years or more?",
+            "¿Ha vivido ahí 3 años o más?",
+          ),
+          {
+            id: "prevAddr",
+            type: "textarea",
+            showIf: a => a.moved === "no",
+            label: {
+              en: "Where else have you lived in the past 3 years?",
+              es: "¿Dónde más ha vivido en los últimos 3 años?",
+            },
+            help: {
+              en: "Street, city, state and ZIP for each one.",
+              es: "Calle, ciudad, estado y código postal de cada una.",
+            },
+          },
+        ],
+      },
+      {
+        id: "license",
+        mins: 2,
+        title: { en: "Your license", es: "Su licencia" },
+        qs: [
+          yn(
+            "cdlA",
+            "Do you have a Class A CDL?",
+            "¿Tiene licencia CDL Clase A?",
+          ),
+          {
+            id: "cdlSoon",
+            type: "choice",
+            showIf: a => a.cdlA === "no",
+            label: {
+              en: "Where are you with getting one?",
+              es: "¿Cómo va con su licencia?",
+            },
+            options: [
+              {
+                v: "school",
+                en: "I'm in CDL school now",
+                es: "Estoy en la escuela de manejo",
+              },
+              {
+                v: "permit",
+                en: "I have my learner permit",
+                es: "Tengo mi permiso de aprendiz",
+              },
+              {
+                v: "notyet",
+                en: "I haven't started yet",
+                es: "Todavía no empiezo",
+              },
+            ],
+          },
+          {
+            id: "cdlState",
+            type: "select",
+            showIf: a => a.cdlA === "yes",
+            label: {
+              en: "Which state issued your CDL?",
+              es: "¿Qué estado le dio su CDL?",
+            },
+          },
+          {
+            id: "cdlNum",
+            type: "text",
+            showIf: a => a.cdlA === "yes",
+            label: {
+              en: "What's your CDL number?",
+              es: "¿Cuál es el número de su CDL?",
+            },
+            help: {
+              en: "It's on the front of your license.",
+              es: "Está al frente de su licencia.",
+            },
+          },
+          {
+            id: "cdlExp",
+            type: "date",
+            showIf: a => a.cdlA === "yes",
+            label: {
+              en: "When does your CDL expire?",
+              es: "¿Cuándo vence su CDL?",
+            },
+          },
+          {
+            id: "endorse",
+            type: "multi",
+            showIf: a => a.cdlA === "yes",
+            label: {
+              en: "Which endorsements do you have?",
+              es: "¿Qué endosos tiene?",
+            },
+            options: [
+              { v: "H", en: "Hazmat (H)", es: "Materiales peligrosos (H)" },
+              { v: "N", en: "Tanker (N)", es: "Tanque (N)" },
+              {
+                v: "X",
+                en: "Tanker and hazmat (X)",
+                es: "Tanque y materiales peligrosos (X)",
+              },
+              {
+                v: "T",
+                en: "Doubles and triples (T)",
+                es: "Dobles y triples (T)",
+              },
+              { v: "none", en: "None", es: "Ninguno" },
+            ],
+          },
+          {
+            id: "licPhoto",
+            type: "file",
+            optional: true,
+            label: {
+              en: "Add a photo of the front of your CDL",
+              es: "Agregue una foto del frente de su CDL",
+            },
+            help: {
+              en: "This helps us check your information faster.",
+              es: "Así revisamos su información más rápido.",
+            },
+          },
+          yn(
+            "medCard",
+            "Do you have a current DOT medical card?",
+            "¿Tiene su tarjeta médica DOT vigente?",
+          ),
+          yn(
+            "otherLic",
+            "In the past 3 years, did you have a license in any other state?",
+            "En los últimos 3 años, ¿tuvo licencia en otro estado?",
+          ),
+          {
+            id: "otherLicInfo",
+            type: "textarea",
+            showIf: a => a.otherLic === "yes",
+            label: {
+              en: "Which states, and what were the license numbers?",
+              es: "¿Qué estados y cuáles eran los números de licencia?",
+            },
+            help: {
+              en: "If you don't have the numbers, just list the states.",
+              es: "Si no tiene los números, solo escriba los estados.",
+            },
+          },
+        ],
+      },
+      {
+        id: "work",
+        mins: 4,
+        title: { en: "Work history", es: "Historial de trabajo" },
+        qs: [
+          {
+            id: "years",
+            type: "choice",
+            label: {
+              en: "How long have you driven an 18-wheeler for work?",
+              es: "¿Cuánto tiempo ha manejado tráiler por trabajo?",
+            },
+            options: [
+              { v: "never", en: "Never", es: "Nunca" },
+              { v: "lt1", en: "Less than 1 year", es: "Menos de 1 año" },
+              { v: "1-2", en: "1 to 2 years", es: "1 a 2 años" },
+              { v: "3-5", en: "3 to 5 years", es: "3 a 5 años" },
+              { v: "5plus", en: "More than 5 years", es: "Más de 5 años" },
+            ],
+          },
+          {
+            id: "jobs",
+            type: "employers",
+            label: {
+              en: "List your jobs from the past 10 years",
+              es: "Escriba sus trabajos de los últimos 10 años",
+            },
+            help: {
+              en: "Start with your most recent job. Include all jobs, not just driving.",
+              es: "Empiece con el más reciente. Incluya todos los trabajos, no solo de manejo.",
+            },
+          },
+        ],
+      },
+      {
+        id: "record",
+        mins: 2,
+        title: { en: "Driving record", es: "Historial de manejo" },
+        qs: [
+          yn(
+            "accidents",
+            "Any accidents in the past 3 years?",
+            "¿Algún accidente en los últimos 3 años?",
+            {
+              en: "Count any crash in any vehicle, even if it wasn't your fault.",
+              es: "Cuente cualquier choque en cualquier vehículo, aunque no haya sido su culpa.",
+            },
+          ),
+          {
+            id: "accidentsInfo",
+            type: "textarea",
+            showIf: a => a.accidents === "yes",
+            label: {
+              en: "Tell us about each accident",
+              es: "Cuéntenos de cada accidente",
+            },
+            help: {
+              en: "The date, where it happened, and if anyone was hurt.",
+              es: "La fecha, dónde pasó y si alguien salió herido.",
+            },
+          },
+          yn(
+            "tickets",
+            "Any traffic tickets in the past 3 years?",
+            "¿Alguna multa de tránsito en los últimos 3 años?",
+            {
+              en: "Don't count parking tickets.",
+              es: "No cuente multas de estacionamiento.",
+            },
+          ),
+          {
+            id: "ticketsInfo",
+            type: "textarea",
+            showIf: a => a.tickets === "yes",
+            label: {
+              en: "Tell us about each ticket",
+              es: "Cuéntenos de cada multa",
+            },
+            help: {
+              en: "The date, what it was for, and the state.",
+              es: "La fecha, el motivo y el estado.",
+            },
+          },
+          yn(
+            "suspended",
+            "Has a license of yours ever been suspended, revoked or denied?",
+            "¿Alguna vez le suspendieron, revocaron o negaron una licencia?",
+          ),
+          {
+            id: "suspendedInfo",
+            type: "textarea",
+            showIf: a => a.suspended === "yes",
+            label: { en: "What happened?", es: "¿Qué pasó?" },
+            help: {
+              en: "The date, the state, and the reason.",
+              es: "La fecha, el estado y el motivo.",
+            },
+          },
+          yn(
+            "drug",
+            "In the past 3 years, did you test positive on, or refuse, a DOT drug or alcohol test?",
+            "En los últimos 3 años, ¿salió positivo o se negó a una prueba DOT de drogas o alcohol?",
+            {
+              en: "Please answer honestly. We check the federal Clearinghouse either way.",
+              es: "Conteste con honestidad. Revisamos el Clearinghouse federal de todos modos.",
+            },
+          ),
+          {
+            id: "rtd",
+            type: "choice",
+            showIf: a => a.drug === "yes",
+            label: {
+              en: "Did you finish the return-to-duty process?",
+              es: "¿Terminó el proceso de regreso al trabajo?",
+            },
+            options: [
+              { v: "yes", en: "Yes, I finished it", es: "Sí, lo terminé" },
+              {
+                v: "progress",
+                en: "I'm still working on it",
+                es: "Todavía estoy en el proceso",
+              },
+              { v: "no", en: "No", es: "No" },
+            ],
+          },
+        ],
+      },
+      {
+        id: "sign",
+        mins: 2,
+        title: { en: "Sign & send", es: "Firmar y enviar" },
+        qs: [
+          {
+            id: "consents",
+            type: "consents",
+            label: { en: "Review your forms", es: "Revise sus formularios" },
+            help: {
+              en: "These let us check your record and past jobs. One checkbox covers all of them.",
+              es: "Nos permiten revisar su récord y sus trabajos anteriores. Una casilla cubre todos.",
+            },
+          },
+          {
+            id: "signature",
+            type: "signature",
+            label: { en: "Sign your application", es: "Firme su solicitud" },
+            help: {
+              en: "Type your full name. This counts as your signature.",
+              es: "Escriba su nombre completo. Esto cuenta como su firma.",
+            },
+          },
+        ],
+      },
+    ];
+
+    const ICON = {
+      check: (s, c) =>
+        `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="${c || "currentColor"}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>`,
+      back: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>',
+      arrow:
+        '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>',
+      x: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>',
+      phone:
+        '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>',
+      camera:
+        '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>',
+    };
+
+    const S = {
+      lang: "es",
+      view: "home",
+      sec: 0,
+      qi: 0,
+      a: {},
+      err: null,
+      jobDraft: null,
+      jobErr: null,
+      photoUrl: null,
+      resetArm: false,
+    };
+
+    try {
+      const saved = JSON.parse(localStorage.getItem(KEY) || "null");
+      if (saved && typeof saved === "object") {
+        S.lang = saved.lang === "en" ? "en" : "es";
+        S.a = saved.a || {};
+      }
+    } catch (e) {}
+    function save() {
+      try {
+        localStorage.setItem(KEY, JSON.stringify({ lang: S.lang, a: S.a }));
+      } catch (e) {}
+    }
+
+    const $ = s => document.querySelector(s);
+    const esc = s =>
+      String(s == null ? "" : s).replace(
+        /[&<>"']/g,
+        c =>
+          ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;",
+          })[c],
+      );
+    const tt = o =>
+      o == null
+        ? ""
+        : typeof o === "string"
+          ? o
+          : o[S.lang] != null
+            ? o[S.lang]
+            : o.en;
+    const u = (k, vars) => {
+      let s = tt(UI[k]);
+      if (vars) for (const v in vars) s = s.split("{" + v + "}").join(vars[v]);
+      return s;
+    };
+    const locale = () => (S.lang === "es" ? "es-US" : "en-US");
+
+    function visibleQs(i) {
+      return SECTIONS[i].qs.filter(q => !q.showIf || q.showIf(S.a));
+    }
+    function answered(q) {
+      const v = S.a[q.id];
+      if (q.type === "multi" || q.type === "employers")
+        return Array.isArray(v) && v.length > 0;
+      if (q.type === "consents") return v === true;
+      return v != null && String(v).trim() !== "";
+    }
+    function secStatus(i) {
+      if (i === 4)
+        return S.a._submitted
+          ? "done"
+          : visibleQs(4).some(answered)
+            ? "progress"
+            : "todo";
+      const qs = visibleQs(i);
+      if (qs.filter(q => !q.optional).every(answered)) return "done";
+      return qs.some(answered) ? "progress" : "todo";
+    }
+    const doneCount = () =>
+      SECTIONS.filter((_, i) => secStatus(i) === "done").length;
+    const minsLeft = () =>
+      SECTIONS.reduce(
+        (m, s, i) => m + (secStatus(i) === "done" ? 0 : s.mins),
+        0,
+      );
+    const firstOpen = () => {
+      const i = SECTIONS.findIndex((_, i) => secStatus(i) !== "done");
+      return i < 0 ? 4 : i;
+    };
+    const anyAnswered = () => Object.keys(S.a).some(k => k[0] !== "_");
+
+    function monthsCovered(jobs) {
+      const now = new Date();
+      const nowIdx = now.getFullYear() * 12 + now.getMonth();
+      const min = nowIdx - 119;
+      const set = new Set();
+      (jobs || []).forEach(j => {
+        if (!j.from) return;
+        const [y, m] = j.from.split("-").map(Number);
+        const s = y * 12 + m - 1;
+        let e = nowIdx;
+        if (!j.current && j.to) {
+          const [y2, m2] = j.to.split("-").map(Number);
+          e = y2 * 12 + m2 - 1;
+        }
+        for (let k = Math.max(s, min); k <= Math.min(e, nowIdx); k++)
+          set.add(k);
+      });
+      return set.size;
+    }
+    function fmtMonth(v) {
+      if (!v) return "";
+      const [y, m] = v.split("-").map(Number);
+      return new Date(y, m - 1, 1).toLocaleDateString(locale(), {
+        month: "short",
+        year: "numeric",
+      });
+    }
+
+    /* ---------- Rendering ---------- */
+    function renderMap() {
+      const cur = S.view === "q" ? S.sec : firstOpen();
+      $("#map").setAttribute("aria-label", u("mapLabel"));
+      $("#map").innerHTML = `
+      <h2>${u("mapTitle", { n: doneCount() })}</h2>
+      <ol class="stops">
+        ${SECTIONS.map((s, i) => {
+          const st = secStatus(i);
+          const isCur = i === cur && !(st === "done" && S.view !== "q");
+          const sub =
+            st === "done"
+              ? u("stDone")
+              : st === "progress"
+                ? u("stProg")
+                : u("stTodo", { m: s.mins });
+          const dot = st === "done" ? ICON.check(16) : String(i + 1);
+          const locked = i === 4 && S.a._submitted;
+          return `<li><button type="button" class="stop ${st === "done" ? "done" : ""} ${isCur ? "current" : ""}" data-act="open" data-i="${i}" ${locked ? "disabled" : ""} ${isCur ? 'aria-current="step"' : ""}>
+            <span class="dot">${dot}</span>
+            <span class="t">${esc(tt(s.title))}</span>
+            <span class="s">${sub}</span>
+          </button></li>`;
+        }).join("")}
+      </ol>`;
+    }
+
+    function demoBar() {
+      return `<div class="demo"><span class="sp">${u("demo")}</span>
+      <button type="button" class="linkbtn" data-act="fill">${u("fill")}</button>
+      <button type="button" class="linkbtn" data-act="reset">${S.resetArm ? u("resetSure") : u("reset")}</button></div>`;
+    }
+
+    function hlLast(t) {
+      const i = t.lastIndexOf(" ");
+      return i < 0
+        ? `<span class="hl">${t}</span>`
+        : `${t.slice(0, i)} <span class="hl">${t.slice(i + 1)}</span>`;
+    }
+
+    function renderHome() {
+      const back = anyAnswered();
+      return {
+        band: `<div class="flag">${u("eyebrow")}</div>
+        <h1 tabindex="-1">${hlLast(back ? u("welcomeBack") : u("welcome"))}</h1>
+        <p class="lede">${back ? u("ledeBack") : u("lede")}</p>`,
+        main: `<button type="button" class="btn" data-act="start">${back ? u("keepGoing") : u("start")} ${ICON.arrow}</button>
+`,
+        extra: `${
+          back
+            ? ""
+            : `<div class="ready"><h2>${u("ready")}</h2><ul>
+          ${["r1", "r2", "r3"].map(k => `<li>${ICON.check(20)}<span>${u(k)}</span></li>`).join("")}
+        </ul></div>`
+        }
+        ${demoBar()}`,
+      };
+    }
+
+    function renderInput(q) {
+      const v = S.a[q.id];
+      const desc = q.help ? 'aria-describedby="qh"' : "";
+      switch (q.type) {
+        case "text":
+        case "email":
+        case "date":
+          return `<input class="input" id="q-${q.id}" data-q="${q.id}" type="${q.type}" aria-labelledby="qt" ${desc} value="${esc(v)}" ${q.auto ? `autocomplete="${q.auto}"` : ""} ${q.type === "email" ? 'inputmode="email"' : ""}>`;
+        case "tel":
+          return `<input class="input" id="q-${q.id}" data-q="${q.id}" type="tel" inputmode="tel" autocomplete="tel" aria-labelledby="qt" ${desc} placeholder="(000) 000-0000" value="${esc(v)}">`;
+        case "textarea":
+          return `<textarea class="input" id="q-${q.id}" data-q="${q.id}" aria-labelledby="qt" ${desc} ${q.auto ? `autocomplete="${q.auto}"` : ""}>${esc(v)}</textarea>`;
+        case "select":
+          return `<select class="input" id="q-${q.id}" data-q="${q.id}" aria-labelledby="qt"><option value="">${u("chooseState")}</option>
+          ${STATES.map(([c, n]) => `<option value="${c}" ${v === c ? "selected" : ""}>${n} (${c})</option>`).join("")}</select>`;
+        case "yesno":
+          return `<div class="yn" role="group" aria-labelledby="qt">
+          <button type="button" class="choice" data-act="pick" data-v="yes" aria-pressed="${v === "yes"}">${ICON.check(28)} ${u("yes")}</button>
+          <button type="button" class="choice" data-act="pick" data-v="no" aria-pressed="${v === "no"}">${ICON.x} ${u("no")}</button></div>`;
+        case "choice":
+          return `<div class="opts" role="group" aria-labelledby="qt">${q.options.map(o => `<button type="button" class="choice" data-act="pick" data-v="${o.v}" aria-pressed="${v === o.v}">${esc(tt(o))}</button>`).join("")}</div>`;
+        case "multi": {
+          const arr = Array.isArray(v) ? v : [];
+          return `<p class="note">${u("tapAll")}</p><div class="opts" role="group" aria-labelledby="qt">${q.options
+            .map(o => {
+              const on = arr.includes(o.v);
+              return `<button type="button" class="choice" data-act="toggle" data-v="${o.v}" aria-pressed="${on}"><span class="box">${on ? ICON.check(18) : ""}</span>${esc(tt(o))}</button>`;
+            })
+            .join("")}</div>`;
+        }
+        case "file":
+          return `<div class="filebox">
+          ${S.photoUrl ? `<img src="${S.photoUrl}" alt="${u("photoAdded")}">` : ""}
+          <input type="file" id="q-${q.id}" class="sr-only" accept="image/*" capture="environment" data-file="${q.id}">
+          <label for="q-${q.id}" class="btn ghost small">${ICON.camera} ${v ? u("changePhoto") : u("choosePhoto")}</label>
+          ${v ? `<span class="note">${u("photoAdded")}: ${esc(v)}</span>` : ""}
+        </div>`;
+        case "employers":
+          return renderJobs();
+        case "consents":
+          return `<ul class="forms">${FORMS.map(
+            f => `<li class="form"><div class="t">${esc(tt(f.t))}</div><p>${esc(tt(f.d))}</p>
+            <details><summary>${u("readFull")}</summary><p>${u("fullText")}</p></details></li>`,
+          ).join("")}</ul>
+          <label class="check agree"><input type="checkbox" id="q-consents" data-check="consents" ${v === true ? "checked" : ""}> <span>${u("agree")}</span></label>`;
+        case "signature": {
+          const today = new Date().toLocaleDateString(locale(), {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          });
+          return `<label class="lab" for="q-signature">${u("sigLabel")}
+            <input class="input" id="q-signature" data-q="signature" autocomplete="name" value="${esc(v != null ? v : "")}" placeholder="${esc(S.a.name || "")}"></label>
+          <div class="sigpad ${v ? "" : "empty"}" id="sigpad" aria-hidden="true">${v ? esc(v) : u("sigHere")}</div>
+          <p class="note">${u("sigDate", { d: today })}</p>`;
+        }
+      }
+      return "";
+    }
+
+    function renderJobs() {
+      const jobs = S.a.jobs || [];
+      const months = monthsCovered(jobs);
+      const yrs = Math.min(10, Math.floor(months / 12));
+      const pct = Math.min(100, Math.round((months / 120) * 100));
+      const list = jobs
+        .map(
+          (j, i) => `<li class="job"><div>
+        <div class="name">${esc(j.company)}</div>
+        <div class="meta">${esc(j.city)}${j.city ? " · " : ""}${fmtMonth(j.from)} – ${j.current ? u("now") : fmtMonth(j.to)}</div>
+        ${j.driving ? `<span class="pill">${u("drivingTag")}</span>` : ""}
+      </div><button type="button" class="linkbtn" data-act="rmjob" data-i="${i}" aria-label="${u("remove")}: ${esc(j.company)}">${u("remove")}</button></li>`,
+        )
+        .join("");
+      const d = S.jobDraft;
+      const form = d
+        ? `<div class="jobform">
+        ${S.jobErr ? `<div class="err" role="alert">${S.jobErr}</div>` : ""}
+        <label class="lab" for="job-company">${u("fCompany")}<input class="input" id="job-company" data-job="company" value="${esc(d.company)}" autocomplete="organization"></label>
+        <label class="lab" for="job-city">${u("fCity")}<input class="input" id="job-city" data-job="city" value="${esc(d.city)}"></label>
+        <div class="row">
+          <label class="lab" for="job-from">${u("fFrom")}<input class="input" type="month" id="job-from" data-job="from" value="${esc(d.from)}"></label>
+          <label class="lab" for="job-to">${u("fTo")}<input class="input" type="month" id="job-to" data-job="to" value="${esc(d.to)}" ${d.current ? "disabled" : ""}></label>
+        </div>
+        <label class="check"><input type="checkbox" id="job-current" data-job="current" ${d.current ? "checked" : ""}> ${u("fCurrent")}</label>
+        <label class="check"><input type="checkbox" id="job-driving" data-job="driving" ${d.driving ? "checked" : ""}> ${u("fDriving")}</label>
+        ${d.current ? "" : `<label class="lab" for="job-reason">${u("fReason")}<input class="input" id="job-reason" data-job="reason" value="${esc(d.reason)}"></label>`}
+        <div class="row"><button type="button" class="btn small" data-act="savejob">${u("saveJob")}</button><button type="button" class="btn ghost small" data-act="canceljob">${u("cancel")}</button></div>
+      </div>`
+        : `<button type="button" class="btn ghost" data-act="addjob">+ ${jobs.length ? u("addAnother") : u("addJob")}</button>`;
+      return `<div class="tally"><div class="line"><span>${u("years", { y: yrs })}</span></div>
+        <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="120" aria-valuenow="${months}" aria-label="${u("years", { y: yrs })}"><span style="width:${pct}%"></span></div></div>
+      ${jobs.length ? `<ul class="jobs">${list}</ul>` : ""}
+      ${form}
+      <p class="note">${u("gapNote")}</p>`;
+    }
+
+    function renderQuestion() {
+      const qs = visibleQs(S.sec);
+      if (S.qi >= qs.length) S.qi = qs.length - 1;
+      const q = qs[S.qi];
+      const isLast = S.sec === 4 && S.qi === qs.length - 1;
+      const autoAdv = q.type === "yesno" || q.type === "choice";
+      const showContinue = !autoAdv || answered(q);
+      return {
+        band: `<div class="qtop">
+          <button type="button" class="iconbtn" data-act="back" aria-label="${u("back")}">${ICON.back}</button>
+          <div class="qmeta"><span class="kick">${u("stopN", { n: S.sec + 1 })}</span><span class="sec">${esc(tt(SECTIONS[S.sec].title))}</span></div>
+          <span class="qcount">${u("qCount", { i: S.qi + 1, n: qs.length })}</span>
+        </div>
+        <div class="segs" style="grid-template-columns: repeat(${qs.length}, minmax(0, 1fr))" aria-hidden="true">${qs.map((_, i) => `<span class="${i <= S.qi ? "on" : ""}"></span>`).join("")}</div>`,
+        main: `<form class="q" id="qform" novalidate>
+          ${q.optional ? `<span class="tag">${u("optional")}</span>` : ""}
+          <h1 id="qt" tabindex="-1">${esc(tt(q.label))}</h1>
+          ${q.help ? `<p class="help" id="qh">${esc(tt(q.help))}</p>` : q.type === "yesno" ? `<p class="help" id="qh">${u("tapOne")}</p>` : ""}
+          <div class="answer">${renderInput(q)}</div>
+          ${S.err ? `<div class="err" role="alert">${S.err}</div>` : ""}
+          <div class="helpstrip">${ICON.phone}<div class="txt"><span class="lbl">${u("help")}</span><span class="num" id="phonenum">${PHONE}</span></div>
+            <button type="button" class="linkbtn" data-act="copy">${u("copy")}</button></div>
+          <div class="qactions">
+            ${showContinue ? `<button type="submit" class="btn">${isLast ? u("submit") : u("next")} ${ICON.arrow}</button>` : ""}
+            ${q.optional && !answered(q) ? `<button type="button" class="linkbtn" data-act="skip">${u("skip")}</button>` : ""}
+          </div>
+        </form>`,
+      };
+    }
+
+    function renderStopDone() {
+      const n = S.sec + 1;
+      const nx = SECTIONS[S.sec + 1];
+      return {
+        band: `<div class="bandmark"><div class="big">${ICON.check(38)}</div><h1 tabindex="-1">${hlLast(u("stopDone", { n }))}</h1></div>`,
+        main: `<div class="after">
+        <p class="lede">${u("nextUp", { s: esc(tt(nx.title)), m: nx.mins })}</p>
+        <button type="button" class="btn" data-act="nextstop">${u("keepGoing")} ${ICON.arrow}</button>
+        <button type="button" class="btn ghost" data-act="break">${u("takeBreak")}</button>
+      </div>`,
+      };
+    }
+
+    function renderDone() {
+      const first =
+        String(S.a.name || "")
+          .trim()
+          .split(/\s+/)[0] || "";
+      return {
+        band: `<div class="bandmark"><div class="big">${ICON.check(38)}</div><h1 tabindex="-1">${hlLast(u("doneTitle"))}</h1></div>`,
+        main: `<div class="after">
+        <p class="lede">${u("doneBody", { name: esc(first) })}</p>
+        <h2>${u("whatNext")}</h2>
+        <ol class="nextsteps"><li>${u("n1")}</li><li>${u("n2")}</li><li>${u("n3")}</li></ol>
+        <button type="button" class="btn ghost" data-act="home">${u("backHome")}</button>
+      </div>`,
+        extra: demoBar(),
+      };
+    }
+
+    function render(nav) {
+      document.documentElement.lang = S.lang;
+      $("#subtitle").textContent = u("sub");
+      document
+        .querySelectorAll('[data-act="lang"]')
+        .forEach(b =>
+          b.setAttribute("aria-pressed", String(b.dataset.v === S.lang)),
+        );
+      $("#shell").classList.toggle("asking", S.view !== "home");
+      renderMap();
+      const view =
+        S.view === "home"
+          ? renderHome()
+          : S.view === "q"
+            ? renderQuestion()
+            : S.view === "stopdone"
+              ? renderStopDone()
+              : renderDone();
+      $("#band").innerHTML = view.band;
+      $("#main").innerHTML = view.main;
+      $("#extra").innerHTML = view.extra || "";
+      if (nav) {
+        window.scrollTo(0, 0);
+        let target;
+        if (S.view === "q") {
+          const inp = $("#main").querySelector(
+            "input.input[data-q], textarea[data-q]",
+          );
+          target =
+            window.matchMedia("(min-width: 900px)").matches && inp
+              ? inp
+              : $("#qt");
+        } else {
+          target = $("#band h1");
+        }
+        if (target) target.focus({ preventScroll: true });
+      }
+    }
+
+    /* ---------- Flow ---------- */
+    function validate(q) {
+      if (q.type === "employers" && !(S.a.jobs || []).length)
+        return u("needJob");
+      if (q.type === "consents" && S.a.consents !== true)
+        return u("needConsent");
+      if (!q.optional && !answered(q)) return u("required");
+      if (
+        q.type === "tel" &&
+        String(S.a.phone || "")
+          .replace(/\D/g, "")
+          .replace(/^1(?=\d{10}$)/, "").length !== 10
+      )
+        return u("phoneErr");
+      return null;
+    }
+    function next() {
+      const qs = visibleQs(S.sec);
+      const q = qs[S.qi];
+      if (q.type === "employers" && S.jobDraft) {
+        if (!saveJob()) {
+          render();
+          return;
+        }
+      }
+      const err = validate(q);
+      if (err) {
+        S.err = err;
+        render();
+        const e = $(".err");
+        if (e) e.scrollIntoView({ block: "center", behavior: "smooth" });
+        return;
+      }
+      S.err = null;
+      const qs2 = visibleQs(S.sec);
+      if (S.qi < qs2.length - 1) {
+        S.qi++;
+        render(true);
+      } else if (S.sec === 4) {
+        S.a._submitted = true;
+        save();
+        S.view = "done";
+        render(true);
+      } else {
+        S.view = "stopdone";
+        render(true);
+      }
+    }
+    function openSection(i) {
+      S.sec = i;
+      S.err = null;
+      S.jobDraft = null;
+      const qs = visibleQs(i);
+      const k = qs.findIndex(q => !q.optional && !answered(q));
+      S.qi = k < 0 ? 0 : k;
+      S.view = "q";
+      render(true);
+    }
+    function saveJob() {
+      const d = S.jobDraft;
+      if (!d.company.trim() || !d.from) {
+        S.jobErr = u("jobErr");
+        return false;
+      }
+      if (!d.current && !d.to) {
+        S.jobErr = u("jobErrEnd");
+        return false;
+      }
+      S.a.jobs = (S.a.jobs || []).concat([
+        {
+          company: d.company.trim(),
+          city: d.city.trim(),
+          from: d.from,
+          to: d.current ? "" : d.to,
+          current: d.current,
+          driving: d.driving,
+          reason: d.current ? "" : d.reason.trim(),
+        },
+      ]);
+      S.a.jobs.sort((x, y) => (y.from || "").localeCompare(x.from || ""));
+      S.jobDraft = null;
+      S.jobErr = null;
+      S.err = null;
+      save();
+      return true;
+    }
+    let toastT;
+    function toast(msg) {
+      const t = $("#toast");
+      t.textContent = msg;
+      t.hidden = false;
+      clearTimeout(toastT);
+      toastT = setTimeout(() => {
+        t.hidden = true;
+      }, 2600);
+    }
+
+    function fillExample() {
+      const y = new Date().getFullYear();
+      S.a = {
+        name: "Miguel Ángel Torres",
+        phone: "(915) 555-0142",
+        email: "",
+        dob: "1986-04-12",
+        address: "1420 Example St, El Paso, TX 79928",
+        moved: "yes",
+        cdlA: "yes",
+        cdlState: "TX",
+        cdlNum: "12345678",
+        cdlExp: y + 2 + "-04-12",
+        endorse: ["N"],
+        medCard: "yes",
+        otherLic: "no",
+        years: "3-5",
+        jobs: [
+          {
+            company: "Example Freight LLC",
+            city: "El Paso, TX",
+            from: y - 3 + "-03",
+            to: "",
+            current: true,
+            driving: true,
+            reason: "",
+          },
+          {
+            company: "Sample Logistics",
+            city: "Las Cruces, NM",
+            from: y - 5 + "-06",
+            to: y - 3 + "-02",
+            current: false,
+            driving: true,
+            reason: "More home time",
+          },
+          {
+            company: "Demo Warehouse Co.",
+            city: "El Paso, TX",
+            from: y - 10 + "-01",
+            to: y - 5 + "-05",
+            current: false,
+            driving: false,
+            reason: "Got my CDL",
+          },
+        ],
+        accidents: "no",
+        tickets: "yes",
+        ticketsInfo: "Mar " + (y - 1) + " · Speeding, 10 mph over · Texas",
+        suspended: "no",
+        drug: "no",
+        consents: true,
+      };
+      S.photoUrl = null;
+      S.view = "home";
+      S.resetArm = false;
+      save();
+      render(true);
+      toast(u("filled"));
+    }
+
+    /* ---------- Events ---------- */
+    document.addEventListener("click", e => {
+      const b = e.target.closest("[data-act]");
+      if (!b) return;
+      const act = b.dataset.act;
+      if (act !== "reset") S.resetArm = false;
+      const qs = S.view === "q" ? visibleQs(S.sec) : null;
+      const q = qs ? qs[S.qi] : null;
+      switch (act) {
+        case "lang":
+          S.lang = b.dataset.v;
+          save();
+          render();
+          break;
+        case "start":
+          openSection(firstOpen());
+          break;
+        case "open":
+          openSection(Number(b.dataset.i));
+          break;
+        case "home":
+          S.view = "home";
+          render(true);
+          break;
+        case "back":
+          S.err = null;
+          S.jobDraft = null;
+          if (S.qi > 0) {
+            S.qi--;
+            render(true);
+          } else {
+            S.view = "home";
+            render(true);
+          }
+          break;
+        case "pick":
+          S.a[q.id] = b.dataset.v;
+          S.err = null;
+          save();
+          render();
+          setTimeout(() => {
+            if (S.view === "q" && visibleQs(S.sec)[S.qi] === q) next();
+          }, 240);
+          break;
+        case "toggle": {
+          let arr = Array.isArray(S.a[q.id]) ? S.a[q.id].slice() : [];
+          const v = b.dataset.v;
+          if (v === "none") arr = arr.includes("none") ? [] : ["none"];
+          else {
+            arr = arr.filter(x => x !== "none");
+            arr = arr.includes(v) ? arr.filter(x => x !== v) : arr.concat(v);
+          }
+          S.a[q.id] = arr;
+          S.err = null;
+          save();
+          render();
+          const btn = document.querySelector(
+            `[data-act="toggle"][data-v="${v}"]`,
+          );
+          if (btn) btn.focus({ preventScroll: true });
+          break;
+        }
+        case "skip":
+          S.err = null;
+          if (S.qi < qs.length - 1) {
+            S.qi++;
+            render(true);
+          } else next();
+          break;
+        case "addjob":
+          S.jobDraft = {
+            company: "",
+            city: "",
+            from: "",
+            to: "",
+            current: !(S.a.jobs || []).length,
+            driving: true,
+            reason: "",
+          };
+          S.jobErr = null;
+          render();
+          {
+            const f = $("#job-company");
+            if (f) f.focus();
+          }
+          break;
+        case "canceljob":
+          S.jobDraft = null;
+          S.jobErr = null;
+          render();
+          break;
+        case "savejob":
+          saveJob();
+          render();
+          break;
+        case "rmjob":
+          S.a.jobs.splice(Number(b.dataset.i), 1);
+          save();
+          render();
+          break;
+        case "nextstop":
+          openSection(S.sec + 1);
+          break;
+        case "break":
+          S.view = "home";
+          render(true);
+          toast(u("breakToast"));
+          break;
+        case "copy": {
+          const done = () => toast(u("copied"));
+          const fallback = () => {
+            const r = document.createRange();
+            r.selectNodeContents($("#phonenum"));
+            const sel = getSelection();
+            sel.removeAllRanges();
+            sel.addRange(r);
+          };
+          try {
+            navigator.clipboard.writeText(PHONE).then(done, fallback);
+          } catch (err) {
+            fallback();
+          }
+          break;
+        }
+        case "fill":
+          fillExample();
+          break;
+        case "reset":
+          if (!S.resetArm) {
+            S.resetArm = true;
+            b.textContent = u("resetSure");
+          } else {
+            S.a = {};
+            S.photoUrl = null;
+            S.resetArm = false;
+            S.view = "home";
+            save();
+            render(true);
+            toast(u("cleared"));
+          }
+          break;
+      }
+    });
+
+    document.addEventListener("submit", e => {
+      e.preventDefault();
+      if (S.view === "q") next();
+    });
+
+    document.addEventListener("input", e => {
+      const t = e.target;
+      if (t.dataset.q) {
+        S.a[t.dataset.q] = t.value;
+        save();
+        if (S.err) {
+          S.err = null;
+          const er = $("#qform .err");
+          if (er) er.remove();
+        }
+        if (t.dataset.q === "signature") {
+          const pad = $("#sigpad");
+          pad.textContent = t.value || u("sigHere");
+          pad.classList.toggle("empty", !t.value);
+        }
+      } else if (t.dataset.job && S.jobDraft && t.type !== "checkbox") {
+        S.jobDraft[t.dataset.job] = t.value;
+      }
+    });
+
+    document.addEventListener("change", e => {
+      const t = e.target;
+      if (t.dataset.q && t.tagName === "SELECT") {
+        S.a[t.dataset.q] = t.value;
+        save();
+      } else if (t.dataset.check) {
+        S.a[t.dataset.check] = t.checked;
+        S.err = null;
+        save();
+        render();
+        const c = $("#q-consents");
+        if (c) c.focus({ preventScroll: true });
+      } else if (t.dataset.job && t.type === "checkbox" && S.jobDraft) {
+        S.jobDraft[t.dataset.job] = t.checked;
+        render();
+        const c = document.getElementById(t.id);
+        if (c) c.focus({ preventScroll: true });
+      } else if (t.dataset.file && t.files && t.files[0]) {
+        const f = t.files[0];
+        S.a[t.dataset.file] = f.name;
+        save();
+        const r = new FileReader();
+        r.onload = () => {
+          S.photoUrl = r.result;
+          render();
+        };
+        r.readAsDataURL(f);
+      }
+    });
+
+    render();
+  })();
+</script>
